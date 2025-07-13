@@ -2,12 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateEventDto } from '../dto/create-event.dto'
 import { DeleteEventDto } from '../dto/delete-event.dto'
-import { Event, EventDescription, EventMedia } from '@prisma/client'
-
-type EventWithRelations = Event & {
-  description: EventDescription | null
-  media: EventMedia | null
-}
+import { EventWithRelations } from '../types'
+import { Event } from '@prisma/client'
 
 @Injectable()
 export class EventService {
