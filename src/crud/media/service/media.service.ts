@@ -1,56 +1,57 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import * as mime from 'mime-types'
 import { FastifyRequest } from 'fastify'
+import { MEDIA_TYPES, MediaType } from '../constants'
 
 @Injectable()
 export class MediaService {
+  private readonly logger = new Logger(MediaService.name)
+
   constructor(private prisma: PrismaService) {}
 
-  async saveMediaStream(paths: string[], user_card_id: string, request: FastifyRequest) {
+  async saveMediaStream(paths: string[], eventId: string, request: FastifyRequest) {
     try {
-      const videoUrls: string[] = []
-      const photoUrls: string[] = []
-
       for (const path of paths) {
         const fileType = mime.lookup(path)
-        console.log('Content-Type', fileType)
 
-        if (fileType) {
-          if (fileType.startsWith('video/')) {
-            videoUrls.push(path)
-          } else if (fileType.startsWith('image/')) {
-            photoUrls.push(path)
-          } else {
-            throw new Error('Unsupported file type')
-          }
-        } else {
+        if (!fileType) {
           throw new Error('Could not determine file type')
         }
+
+        const mediaType = this.getMediaType(fileType)
+
+        await this.prisma.eventMedia.create({
+          data: {
+            eventId,
+            url: path,
+            type: mediaType,
+          },
+        })
+
+        this.logger.log(`✅ Media saved for event ${eventId}: ${path}`)
       }
 
-      // if (videoUrls.length > 0) {
-      //   await this.prisma.videos.create({
-      //     data: {
-      //       user_card_id: user_card_id,
-      //       video_urls: videoUrls,
-      //     },
-      //   })
-      // }
-
-      // if (photoUrls.length > 0) {
-      //   await this.prisma.photos.create({
-      //     data: {
-      //       user_card_id: user_card_id,
-      //       photo_urls: photoUrls,
-      //     },
-      //   })
-      // }
+      return {
+        message: 'Files uploaded successfully',
+        paths,
+        eventId,
+      }
     } catch (error) {
-      console.error('❌ Error during file save:', error)
+      this.logger.error('❌ Error during file save:', error)
       throw new Error('Error while saving the file')
     } finally {
       request.user_card_id = null
+    }
+  }
+
+  private getMediaType(fileType: string): MediaType {
+    if (fileType.startsWith('video/')) {
+      return MEDIA_TYPES.VIDEO
+    } else if (fileType.startsWith('image/')) {
+      return MEDIA_TYPES.IMAGE
+    } else {
+      throw new Error('Unsupported file type')
     }
   }
 }

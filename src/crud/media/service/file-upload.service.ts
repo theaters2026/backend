@@ -22,9 +22,9 @@ export class FileUploadService {
     const uploadDir = path.join(
       process.cwd(),
       'static',
+      subFolder,
       context.userId,
       context.userCardId,
-      subFolder,
     )
     const uploadPath = path.join(uploadDir, fileName)
 
