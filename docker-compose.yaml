@@ -47,7 +47,7 @@ services:
         max-size: "1m"
         max-file: "3"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $DATABASE_USERNAME"]
+      test: [ "CMD-SHELL", "pg_isready -U $DATABASE_USERNAME" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -68,13 +68,13 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
       - postgres
-      - redis 
+      - redis
     container_name: "nestjs-app"
     networks:
       - app
     restart: always
     logging:
-      driver: "json-file" 
+      driver: "json-file"
       options:
         max-size: "1m"
         max-file: "3"

@@ -3,6 +3,6 @@ const config = {
   rules: {
     'header-max-length': [2, 'always', 172],
   },
-};
+}
 
-export default config;
+export default config

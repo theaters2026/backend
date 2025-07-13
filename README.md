@@ -15,7 +15,9 @@
 
 ## 📖 Description
 
-A robust backend API system built with NestJS and TypeScript for managing cultural events. The system provides comprehensive REST API endpoints for event management, user authentication, and data processing with modern development practices and containerized deployment.
+A robust backend API system built with NestJS and TypeScript for managing cultural events. The system provides
+comprehensive REST API endpoints for event management, user authentication, and data processing with modern development
+practices and containerized deployment.
 
 ## ✨ Core Features
 
@@ -31,6 +33,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## 🏗️ Architecture & Technologies
 
 ### Backend Stack
+
 - **Framework**: NestJS 11.0.10
 - **Language**: TypeScript 5.1.3
 - **Runtime**: Node.js 18+
@@ -40,6 +43,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 - **Documentation**: Swagger/OpenAPI
 
 ### Database & Infrastructure
+
 - **Database**: PostgreSQL with Bitnami image
 - **Cache & Sessions**: Redis
 - **Containerization**: Docker & Docker Compose
@@ -47,6 +51,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 - **Package Manager**: Yarn
 
 ### Development Tools
+
 - **Testing**: Jest 29.5.0
 - **Linting**: ESLint 9.21.0 with TypeScript support
 - **Code Quality**: Prettier, Husky, Commitlint
@@ -55,11 +60,13 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker & Docker Compose
 - Node.js 18+ (for local development)
 - Yarn package manager
 
 ### 1. Clone Repository
+
 ```aiignore
 git clone ssh://git@gitverse.ru:2222/studentlabs/theater_platform_backend.git cd theater_platform_backend
 ```
@@ -98,6 +105,7 @@ export IMAGE_TAG_PG="latest"
 ### 3. Docker Deployment
 
 #### Start All Services
+
 ```aiignore
 docker-compose up -d
 ```

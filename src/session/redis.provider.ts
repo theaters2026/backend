@@ -1,9 +1,7 @@
 import IORedis from 'ioredis'
 
 const redisUri = process.env.REDIS_URI
-const defaultTtl = process.env.SESSION_TTL
-  ? parseInt(process.env.SESSION_TTL, 10)
-  : 24 * 60 * 60
+const defaultTtl = process.env.SESSION_TTL ? parseInt(process.env.SESSION_TTL, 10) : 24 * 60 * 60
 
 export const redis = new IORedis(redisUri, {
   lazyConnect: true,
@@ -34,9 +32,7 @@ export const customRedisStore = {
 
   async set(sid: string, session: any, callback: (err?: any) => void) {
     try {
-      const ttl = session.cookie?.maxAge
-        ? Math.floor(session.cookie.maxAge / 1000)
-        : defaultTtl
+      const ttl = session.cookie?.maxAge ? Math.floor(session.cookie.maxAge / 1000) : defaultTtl
 
       await redis.setex(`session:${sid}`, ttl, JSON.stringify(session))
       callback()

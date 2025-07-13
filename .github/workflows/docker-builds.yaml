@@ -3,7 +3,7 @@ name: Build Docker Images
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   trigger-build:
@@ -29,6 +29,6 @@ jobs:
     needs: [ trigger-cleanup ]
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to environment
-      run: |
-        echo "Deploying application"
+      - name: Deploy to environment
+        run: |
+          echo "Deploying application"

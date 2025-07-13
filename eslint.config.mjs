@@ -1,7 +1,6 @@
-import tsEslintParser from '@typescript-eslint/parser';
-import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
-import prettierPlugin from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
+import tsEslintParser from '@typescript-eslint/parser'
+import tsEslintPlugin from '@typescript-eslint/eslint-plugin'
+import prettierPlugin from 'eslint-plugin-prettier'
 
 export default [
   {
@@ -37,4 +36,4 @@ export default [
   {
     ignores: ['node_modules', 'dist', '.venv'],
   },
-];
+]

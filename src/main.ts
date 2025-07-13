@@ -3,10 +3,7 @@ import { AppModule } from './app.module'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as cliColor from 'cli-color'
 import { registerFastifyPlugins } from './session/fastify.config'
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import Fastify from 'fastify'
 import { ZodValidationPipe } from './common/pipes/zod-validation.pipe'
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes'
@@ -61,9 +58,7 @@ async function bootstrap() {
   await app.listen(port, host)
 
   logger.log(cliColor.blue(`🌐 Application is running on: ${baseUrl}`))
-  logger.log(
-    cliColor.cyan(`📚 Swagger documentation available at: ${baseUrl}/api`),
-  )
+  logger.log(cliColor.cyan(`📚 Swagger documentation available at: ${baseUrl}/api`))
 }
 
 bootstrap().catch((error) => {

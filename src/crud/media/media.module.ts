@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common'
-import { MediaController } from './controllers/media.controller'
-import { MediaService } from './service/media.service'
+import { UploadFileInterceptor } from './interceptors/upload-file.interceptor'
+import { FileValidationService } from './service/file-validation.service'
+import { FileUploadService } from './service/file-upload.service'
+import { MultipartProcessorService } from './service/multipart-processor.service'
+
 @Module({
-  imports: [],
-  controllers: [MediaController],
-  providers: [MediaService],
+  providers: [
+    UploadFileInterceptor,
+    FileValidationService,
+    FileUploadService,
+    MultipartProcessorService,
+  ],
+  exports: [UploadFileInterceptor],
 })
-export class MediaModule {}
+export class UploadModule {}
