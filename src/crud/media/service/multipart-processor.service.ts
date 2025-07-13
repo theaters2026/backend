@@ -15,7 +15,7 @@ export class MultipartProcessorService {
 
     const uploadedFiles: MultipartFile[] = []
     const uploadPaths: string[] = []
-    let user_card_id: string | null = null
+    let userCardId: string | null = null
     let partNumber = 1
 
     this.logger.log('✅ Multipart request detected, processing parts')
@@ -29,20 +29,20 @@ export class MultipartProcessorService {
         uploadPaths.push(processedFile.uploadPath)
       }
 
-      if (part.type === 'field' && part.fieldname === 'user_card_id') {
-        user_card_id = part.value as string
-        this.logger.log(`✅ Received user_card_id: ${user_card_id}`)
+      if (part.type === 'field' && part.fieldname === 'userCardId') {
+        userCardId = part.value as string
+        this.logger.log(`✅ Received userCardId: ${userCardId}`)
       }
 
       partNumber++
     }
 
-    this.validateProcessingResults(uploadedFiles, user_card_id, request)
+    this.validateProcessingResults(uploadedFiles, userCardId, request)
 
     return {
       uploadedFiles,
       uploadPaths,
-      user_card_id: user_card_id || request.session.user_card_id,
+      userCardId: userCardId || request.session.user_card_id,
     }
   }
 
@@ -68,7 +68,7 @@ export class MultipartProcessorService {
 
   private validateProcessingResults(
     uploadedFiles: MultipartFile[],
-    user_card_id: string | null,
+    userCardId: string | null,
     request: FastifyRequest,
   ): void {
     if (uploadedFiles.length === 0) {
@@ -76,10 +76,10 @@ export class MultipartProcessorService {
       throw new BadRequestException('No files uploaded')
     }
 
-    const finalUserCardId = user_card_id || request.session.user_card_id
+    const finalUserCardId = userCardId || request.session.user_card_id
     if (!finalUserCardId) {
-      this.logger.error('❌ Error: user_card_id not specified')
-      throw new BadRequestException('user_card_id not specified')
+      this.logger.error('❌ Error: userCardId not specified')
+      throw new BadRequestException('userCardId not specified')
     }
   }
 }

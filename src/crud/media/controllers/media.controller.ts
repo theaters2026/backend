@@ -10,6 +10,6 @@ export class MediaController {
   @Post('upload')
   @UseInterceptors(UploadFileInterceptor)
   async uploadFile(@Req() request: FastifyRequest) {
-    return this.mediaService.saveMediaStream(request.uploadPaths!, request.user_card_id!, request)
+    return this.mediaService.saveMediaStream(request.uploadPaths!, request.userCardId!, request)
   }
 }

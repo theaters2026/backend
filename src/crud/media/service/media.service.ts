@@ -41,7 +41,7 @@ export class MediaService {
       this.logger.error('❌ Error during file save:', error)
       throw new Error('Error while saving the file')
     } finally {
-      request.user_card_id = null
+      request.userCardId = null
     }
   }
 

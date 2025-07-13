@@ -14,7 +14,7 @@ import { MultipartFile } from '@fastify/multipart'
 declare module 'fastify' {
   interface FastifyRequest {
     uploadedFiles?: MultipartFile[]
-    user_card_id?: string
+    userCardId?: string
     uploadPaths?: string[]
   }
 }
@@ -45,7 +45,7 @@ export class UploadFileInterceptor implements NestInterceptor {
 
   private attachResultToRequest(request: FastifyRequest, result: any): void {
     request.uploadedFiles = result.uploadedFiles
-    request.user_card_id = result.user_card_id
+    request.userCardId = result.userCardId
     request.uploadPaths = result.uploadPaths
   }
 }

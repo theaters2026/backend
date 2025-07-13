@@ -3,7 +3,7 @@ import { MultipartFile } from '@fastify/multipart'
 export interface UploadResult {
   uploadedFiles: MultipartFile[]
   uploadPaths: string[]
-  user_card_id: string
+  userCardId: string
 }
 
 export interface FileProcessingContext {
