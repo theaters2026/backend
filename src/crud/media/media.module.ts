@@ -13,4 +13,4 @@ import { MultipartProcessorService } from './service/multipart-processor.service
   ],
   exports: [UploadFileInterceptor],
 })
-export class UploadModule {}
+export class MediaModule {}
