@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import * as mime from 'mime-types'
 import { FastifyRequest } from 'fastify'
 import { MEDIA_TYPES, MediaType } from '../constants'
+import { MediaSaveResult } from '../interfaces'
 
 @Injectable()
 export class MediaService {
@@ -10,13 +11,17 @@ export class MediaService {
 
   constructor(private prisma: PrismaService) {}
 
-  async saveMediaStream(paths: string[], eventId: string, request: FastifyRequest) {
+  async saveMediaStream(
+    paths: string[],
+    eventId: string,
+    request: FastifyRequest,
+  ): Promise<MediaSaveResult> {
     try {
       for (const path of paths) {
         const fileType = mime.lookup(path)
 
         if (!fileType) {
-          throw new Error('Could not determine file type')
+          throw new Error(`Could not determine file type for: ${path}`)
         }
 
         const mediaType = this.getMediaType(fileType)
@@ -39,7 +44,9 @@ export class MediaService {
       }
     } catch (error) {
       this.logger.error('❌ Error during file save:', error)
-      throw new Error('Error while saving the file')
+      throw new Error(
+        `Error while saving the file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     } finally {
       request.userCardId = null
     }
@@ -51,7 +58,7 @@ export class MediaService {
     } else if (fileType.startsWith('image/')) {
       return MEDIA_TYPES.IMAGE
     } else {
-      throw new Error('Unsupported file type')
+      throw new Error(`Unsupported file type: ${fileType}`)
     }
   }
 }

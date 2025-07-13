@@ -4,7 +4,8 @@ import { createWriteStream, promises as fsPromises } from 'fs'
 import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { FileValidationService } from './file-validation.service'
-import { FileProcessingContext, ProcessedFile } from '../types/upload.types'
+import { FileProcessingContext, ProcessedFile } from '../interfaces'
+import { DirectoryCreationResult, FileUploadResult } from '../interfaces'
 
 @Injectable()
 export class FileUploadService {
@@ -42,25 +43,42 @@ export class FileUploadService {
     return `${fileUuid}${extension}`
   }
 
-  private async ensureDirectoryExists(dirPath: string): Promise<void> {
-    await fsPromises.mkdir(dirPath, { recursive: true })
+  private async ensureDirectoryExists(dirPath: string): Promise<DirectoryCreationResult> {
+    try {
+      await fsPromises.mkdir(dirPath, { recursive: true })
+      return {
+        success: true,
+        path: dirPath,
+      }
+    } catch (error) {
+      this.logger.error(`❌ Error creating directory ${dirPath}:`, error)
+      throw new BadRequestException(
+        `Failed to create upload directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+    }
   }
 
-  private async saveFile(file: MultipartFile, uploadPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+  private async saveFile(file: MultipartFile, uploadPath: string): Promise<FileUploadResult> {
+    return new Promise<FileUploadResult>((resolve, reject) => {
       const fileStream = createWriteStream(uploadPath)
+      const fileName = path.basename(uploadPath)
+
       file.file.pipe(fileStream)
 
       fileStream.on('open', () => this.logger.log(`🟡 Starting file write: ${uploadPath}`))
 
       fileStream.on('finish', () => {
         this.logger.log(`🟢 File uploaded successfully: ${uploadPath}`)
-        resolve()
+        resolve({
+          success: true,
+          filePath: uploadPath,
+          fileName,
+        })
       })
 
       fileStream.on('error', (err) => {
         this.logger.error('❌ Error writing file:', err)
-        reject(new BadRequestException('Error uploading file'))
+        reject(new BadRequestException(`Error uploading file: ${err.message}`))
       })
     })
   }

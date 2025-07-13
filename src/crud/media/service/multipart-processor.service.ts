@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { FastifyRequest } from 'fastify'
 import { MultipartFile } from '@fastify/multipart'
 import { FileUploadService } from './file-upload.service'
-import { ProcessedFile, UploadResult } from '../types/upload.types'
+import { ProcessedFile, UploadResult } from '../interfaces'
 
 @Injectable()
 export class MultipartProcessorService {
@@ -11,7 +11,7 @@ export class MultipartProcessorService {
   constructor(private readonly fileUploadService: FileUploadService) {}
 
   async processMultipartRequest(request: FastifyRequest): Promise<UploadResult> {
-    this.validateMultipartRequest(request)
+    await this.validateMultipartRequest(request)
 
     const uploadedFiles: MultipartFile[] = []
     const uploadPaths: string[] = []
@@ -37,7 +37,7 @@ export class MultipartProcessorService {
       partNumber++
     }
 
-    this.validateProcessingResults(uploadedFiles, userCardId, request)
+    await this.validateProcessingResults(uploadedFiles, userCardId, request)
 
     return {
       uploadedFiles,
@@ -46,10 +46,14 @@ export class MultipartProcessorService {
     }
   }
 
-  private validateMultipartRequest(request: FastifyRequest): void {
-    if (!request.isMultipart()) {
-      throw new BadRequestException('Request is not multipart')
-    }
+  private validateMultipartRequest(request: FastifyRequest): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!request.isMultipart()) {
+        reject(new BadRequestException('Request is not multipart'))
+      } else {
+        resolve()
+      }
+    })
   }
 
   private async processFilePart(
@@ -70,16 +74,22 @@ export class MultipartProcessorService {
     uploadedFiles: MultipartFile[],
     userCardId: string | null,
     request: FastifyRequest,
-  ): void {
-    if (uploadedFiles.length === 0) {
-      this.logger.error('❌ Error: No files uploaded')
-      throw new BadRequestException('No files uploaded')
-    }
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (uploadedFiles.length === 0) {
+        this.logger.error('❌ Error: No files uploaded')
+        reject(new BadRequestException('No files uploaded'))
+        return
+      }
 
-    const finalUserCardId = userCardId || request.session.user_card_id
-    if (!finalUserCardId) {
-      this.logger.error('❌ Error: userCardId not specified')
-      throw new BadRequestException('userCardId not specified')
-    }
+      const finalUserCardId = userCardId || request.session.user_card_id
+      if (!finalUserCardId) {
+        this.logger.error('❌ Error: userCardId not specified')
+        reject(new BadRequestException('userCardId not specified'))
+        return
+      }
+
+      resolve()
+    })
   }
 }
