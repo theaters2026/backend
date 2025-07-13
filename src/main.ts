@@ -5,7 +5,7 @@ import * as cliColor from 'cli-color'
 import { registerFastifyPlugins } from './session/fastify.config'
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import Fastify from 'fastify'
-import { ZodValidationPipe } from './common/pipes/zod-validation.pipe'
+import { ZodValidationPipe } from './common/pipes'
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes'
 import { Logger } from '@nestjs/common'
 
