@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { MultipartFile } from '@fastify/multipart'
 import { createWriteStream, promises as fsPromises } from 'fs'
 import * as path from 'path'
@@ -6,35 +6,43 @@ import { v4 as uuidv4 } from 'uuid'
 import { FileValidationService } from './file-validation.service'
 import { FileProcessingContext, ProcessedFile } from '../interfaces'
 import { DirectoryCreationResult, FileUploadResult } from '../interfaces'
+import { DirectoryCreationError, FileSaveError, ErrorHandlerService } from '../errors'
 
 @Injectable()
 export class FileUploadService {
   private readonly logger = new Logger(FileUploadService.name)
 
-  constructor(private readonly fileValidationService: FileValidationService) {}
+  constructor(
+    private readonly fileValidationService: FileValidationService,
+    private readonly errorHandler: ErrorHandlerService,
+  ) {}
 
   async processFile(file: MultipartFile, context: FileProcessingContext): Promise<ProcessedFile> {
-    this.fileValidationService.validateFile(file)
+    try {
+      this.fileValidationService.validateFile(file)
 
-    const fileExtension = path.extname(file.filename).toLowerCase()
-    const subFolder = this.fileValidationService.getSubFolder(fileExtension)
-    const fileName = this.generateFileName(fileExtension)
+      const fileExtension = path.extname(file.filename).toLowerCase()
+      const subFolder = this.fileValidationService.getSubFolder(fileExtension)
+      const fileName = this.generateFileName(fileExtension)
 
-    const uploadDir = path.join(
-      process.cwd(),
-      'static',
-      subFolder,
-      context.userId,
-      context.userCardId,
-    )
-    const uploadPath = path.join(uploadDir, fileName)
+      const uploadDir = path.join(
+        process.cwd(),
+        'static',
+        subFolder,
+        context.userId,
+        context.userCardId,
+      )
+      const uploadPath = path.join(uploadDir, fileName)
 
-    await this.ensureDirectoryExists(uploadDir)
-    await this.saveFile(file, uploadPath)
+      await this.ensureDirectoryExists(uploadDir)
+      await this.saveFile(file, uploadPath)
 
-    return {
-      file,
-      uploadPath,
+      return {
+        file,
+        uploadPath,
+      }
+    } catch (error) {
+      this.errorHandler.handleError(error, 'file processing')
     }
   }
 
@@ -52,9 +60,7 @@ export class FileUploadService {
       }
     } catch (error) {
       this.logger.error(`❌ Error creating directory ${dirPath}:`, error)
-      throw new BadRequestException(
-        `Failed to create upload directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      )
+      throw new DirectoryCreationError(dirPath, error as Error)
     }
   }
 
@@ -78,7 +84,7 @@ export class FileUploadService {
 
       fileStream.on('error', (err) => {
         this.logger.error('❌ Error writing file:', err)
-        reject(new BadRequestException(`Error uploading file: ${err.message}`))
+        reject(new FileSaveError(uploadPath, err))
       })
     })
   }

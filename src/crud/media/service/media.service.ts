@@ -4,12 +4,16 @@ import * as mime from 'mime-types'
 import { FastifyRequest } from 'fastify'
 import { MEDIA_TYPES, MediaType } from '../constants'
 import { MediaSaveResult } from '../interfaces'
+import { UnknownFileTypeError, UnsupportedFileTypeError, ErrorHandlerService } from '../errors'
 
 @Injectable()
 export class MediaService {
   private readonly logger = new Logger(MediaService.name)
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly errorHandler: ErrorHandlerService,
+  ) {}
 
   async saveMediaStream(
     paths: string[],
@@ -21,7 +25,7 @@ export class MediaService {
         const fileType = mime.lookup(path)
 
         if (!fileType) {
-          throw new Error(`Could not determine file type for: ${path}`)
+          throw new UnknownFileTypeError(path)
         }
 
         const mediaType = this.getMediaType(fileType)
@@ -43,10 +47,7 @@ export class MediaService {
         eventId,
       }
     } catch (error) {
-      this.logger.error('❌ Error during file save:', error)
-      throw new Error(
-        `Error while saving the file: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      )
+      this.errorHandler.handleError(error, 'media saving')
     } finally {
       request.userCardId = null
     }
@@ -58,7 +59,7 @@ export class MediaService {
     } else if (fileType.startsWith('image/')) {
       return MEDIA_TYPES.IMAGE
     } else {
-      throw new Error(`Unsupported file type: ${fileType}`)
+      throw new UnsupportedFileTypeError(fileType)
     }
   }
 }
