@@ -71,37 +71,36 @@ cd theater_platform_backend
 Create a `.envrc` file based on the example: and execute `direnv allow`
 
 ```
-export DATABASE_TYPE="postgres"
-export DATABASE_HOST="localhost"
-export DATABASE_PORT="5432"
-export DATABASE_USERNAME="postgres"
-export DATABASE_NAME="pure"
-export DATABASE_PASSWORD="your_password"
-export PGDATA="/data/pg-data"
-export BACKEND_PORT="3000"
+export DATABASE_TYPE=""
+export DATABASE_HOST=""
+export DATABASE_PORT=""
+export DATABASE_USERNAME=""
+export DATABASE_NAME=""
+export DATABASE_PASSWORD=""
+export PGDATA=""
+export BACKEND_PORT=""
 
 export DATABASE_URL="postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
 
-export SESSION_SECRET="your_secure_session_secret"
+export SESSION_SECRET=""
 
-export REDIS_PORT="6379"
-export SESSION_FOLDER="user-session"
-export REDIS_URI="redis://localhost:6379"
+export REDIS_PORT=""
+export SESSION_FOLDER=""
+export REDIS_URI=""
 
 
-export MULTIPART_FILE_SIZE="104857600"
-export MULTIPART_FIELD_SIZE="2097152"
-export MULTIPART_PARTS="100"
-export MULTIPART_FILES="5"
-export MULTIPART_FIELD_NAME_SIZE="1000"
+export MULTIPART_FILE_SIZE=""
+export MULTIPART_FIELD_SIZE=""
+export MULTIPART_PARTS=""
+export MULTIPART_FILES=""
+export MULTIPART_FIELD_NAME_SIZE=""
 
-export SESSION_COOKIE_SAME_SITE="lax"
-export SESSION_COOKIE_HTTP_ONLY="true"
-export SESSION_COOKIE_SECURE="false"
+export SESSION_COOKIE_SAME_SITE=""
+export SESSION_COOKIE_HTTP_ONLY=""
+export SESSION_COOKIE_SECURE=""
 export SESSION_COOKIE_MAX_AGE=""
-export CONNECTION_TIMEOUT="300000"
-export BODY_LIMIT="104857600"
-
+export CONNECTION_TIMEOUT=""
+export BODY_LIMIT=""
 ```
 ### 3. Installation
 Install dependencies:
