@@ -20,8 +20,8 @@ async function bootstrap() {
   const baseUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`
 
   const fastifyInstance = Fastify({
-    bodyLimit: 100 * 1024 * 1024, // 100 MB
-    connectionTimeout: 300000, // 5 minutes
+    bodyLimit: parseInt(process.env.BODY_LIMIT || '104857600', 10),
+    connectionTimeout: parseInt(process.env.CONNECTION_TIMEOUT || '300000', 10),
   })
 
   const app = await NestFactory.create<NestFastifyApplication>(

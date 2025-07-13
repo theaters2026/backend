@@ -1,7 +1,10 @@
 import IORedis from 'ioredis'
+import { Logger } from '@nestjs/common'
 
 const redisUri = process.env.REDIS_URI
 const defaultTtl = process.env.SESSION_TTL ? parseInt(process.env.SESSION_TTL, 10) : 24 * 60 * 60
+
+const logger = new Logger('RedisProvider')
 
 export const redis = new IORedis(redisUri, {
   lazyConnect: true,
@@ -10,11 +13,11 @@ export const redis = new IORedis(redisUri, {
 })
 
 redis.on('error', (err) => {
-  console.error('Redis error:', err)
+  logger.error('Redis error:', err)
 })
 
 redis.on('connect', () => {
-  console.log('Redis connection successful!')
+  logger.log('Redis connection successful!')
 })
 
 export const customRedisStore = {

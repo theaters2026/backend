@@ -87,6 +87,21 @@ export SESSION_SECRET="your_secure_session_secret"
 export REDIS_PORT="6379"
 export SESSION_FOLDER="user-session"
 export REDIS_URI="redis://localhost:6379"
+
+
+export MULTIPART_FILE_SIZE="104857600"
+export MULTIPART_FIELD_SIZE="2097152"
+export MULTIPART_PARTS="100"
+export MULTIPART_FILES="5"
+export MULTIPART_FIELD_NAME_SIZE="1000"
+
+export SESSION_COOKIE_SAME_SITE="lax"
+export SESSION_COOKIE_HTTP_ONLY="true"
+export SESSION_COOKIE_SECURE="false"
+export SESSION_COOKIE_MAX_AGE=""
+export CONNECTION_TIMEOUT="300000"
+export BODY_LIMIT="104857600"
+
 ```
 ### 3. Installation
 Install dependencies:
