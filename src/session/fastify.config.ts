@@ -1,11 +1,11 @@
 import * as fastifyCookie from '@fastify/cookie'
 import * as fastifySession from '@fastify/session'
 import * as fastifyCors from '@fastify/cors'
-import { customRedisStore } from './redis.provider'
+import { customRedisStore } from './providers'
 import fastifyStatic from '@fastify/static'
 import { join } from 'path'
 import { fastifyMultipart } from '@fastify/multipart'
-import { cookieConfig, multipartLimits } from './fastify.constants'
+import { cookieConfig, multipartLimits } from './constants'
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
 const allowedOrigins = frontendUrl.split(',').map((url) => url.trim())
