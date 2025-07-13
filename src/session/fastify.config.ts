@@ -42,7 +42,7 @@ export function registerFastifyPlugins(app) {
     acceptRange: true,
     cacheControl: true,
     maxAge: '1d',
-    decorateReply: false, // Избегаем конфликтов с предыдущей регистрацией
+    decorateReply: false,
   })
 
   app.register(fastifySession, {
