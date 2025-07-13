@@ -39,8 +39,7 @@ export class EventController {
   @Get()
   @ApiOperation({
     summary: 'Get all events',
-    description:
-      'Retrieves all events with their descriptions and media content, ordered by date',
+    description: 'Retrieves all events with their descriptions and media content, ordered by date',
   })
   @ApiResponse({
     status: 200,

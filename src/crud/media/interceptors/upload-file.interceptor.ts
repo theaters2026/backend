@@ -23,27 +23,19 @@ declare module 'fastify' {
 export class UploadFileInterceptor implements NestInterceptor {
   private readonly logger = new Logger(UploadFileInterceptor.name)
 
-  constructor(
-    private readonly multipartProcessorService: MultipartProcessorService,
-  ) {}
+  constructor(private readonly multipartProcessorService: MultipartProcessorService) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest<FastifyRequest>()
 
     this.logger.log('🟢 Starting file upload request processing')
 
     try {
-      const result =
-        await this.multipartProcessorService.processMultipartRequest(request)
+      const result = await this.multipartProcessorService.processMultipartRequest(request)
 
       this.attachResultToRequest(request, result)
 
-      this.logger.log(
-        '🟢 Request processing completed successfully, passing control forward',
-      )
+      this.logger.log('🟢 Request processing completed successfully, passing control forward')
       return next.handle()
     } catch (error) {
       this.logger.error(`❌ Error processing files: ${error.message}`)

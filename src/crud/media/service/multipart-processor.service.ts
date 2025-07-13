@@ -10,9 +10,7 @@ export class MultipartProcessorService {
 
   constructor(private readonly fileUploadService: FileUploadService) {}
 
-  async processMultipartRequest(
-    request: FastifyRequest,
-  ): Promise<UploadResult> {
+  async processMultipartRequest(request: FastifyRequest): Promise<UploadResult> {
     this.validateMultipartRequest(request)
 
     const uploadedFiles: MultipartFile[] = []
@@ -23,9 +21,7 @@ export class MultipartProcessorService {
     this.logger.log('✅ Multipart request detected, processing parts')
 
     for await (const part of request.parts()) {
-      this.logger.log(
-        `📌 Processing part #${partNumber}: ${part.fieldname}, type: ${part.type}`,
-      )
+      this.logger.log(`📌 Processing part #${partNumber}: ${part.fieldname}, type: ${part.type}`)
 
       if (part.type === 'file' && part.fieldname === 'file') {
         const processedFile = await this.processFilePart(part, request)

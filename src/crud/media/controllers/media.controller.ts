@@ -1,10 +1,5 @@
 import { Controller, Post, Req, UseInterceptors } from '@nestjs/common'
-import {
-  ApiConsumes,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { MediaService } from '../service/media.service'
 import { FastifyRequest } from 'fastify'
 import { UploadFileInterceptor } from '../interceptors/upload-file.interceptor'
@@ -53,10 +48,6 @@ export class MediaController {
     description: 'Internal server error',
   })
   async uploadFile(@Req() request: FastifyRequest) {
-    return this.mediaService.saveMediaStream(
-      request.uploadPaths!,
-      request.user_card_id!,
-      request,
-    )
+    return this.mediaService.saveMediaStream(request.uploadPaths!, request.user_card_id!, request)
   }
 }

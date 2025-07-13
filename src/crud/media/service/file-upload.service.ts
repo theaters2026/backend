@@ -12,10 +12,7 @@ export class FileUploadService {
 
   constructor(private readonly fileValidationService: FileValidationService) {}
 
-  async processFile(
-    file: MultipartFile,
-    context: FileProcessingContext,
-  ): Promise<ProcessedFile> {
+  async processFile(file: MultipartFile, context: FileProcessingContext): Promise<ProcessedFile> {
     this.fileValidationService.validateFile(file)
 
     const fileExtension = path.extname(file.filename).toLowerCase()
@@ -49,17 +46,12 @@ export class FileUploadService {
     await fsPromises.mkdir(dirPath, { recursive: true })
   }
 
-  private async saveFile(
-    file: MultipartFile,
-    uploadPath: string,
-  ): Promise<void> {
+  private async saveFile(file: MultipartFile, uploadPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const fileStream = createWriteStream(uploadPath)
       file.file.pipe(fileStream)
 
-      fileStream.on('open', () =>
-        this.logger.log(`🟡 Starting file write: ${uploadPath}`),
-      )
+      fileStream.on('open', () => this.logger.log(`🟡 Starting file write: ${uploadPath}`))
 
       fileStream.on('finish', () => {
         this.logger.log(`🟢 File uploaded successfully: ${uploadPath}`)

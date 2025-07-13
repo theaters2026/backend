@@ -7,11 +7,7 @@ import { FastifyRequest } from 'fastify'
 export class MediaService {
   constructor(private prisma: PrismaService) {}
 
-  async saveMediaStream(
-    paths: string[],
-    user_card_id: string,
-    request: FastifyRequest,
-  ) {
+  async saveMediaStream(paths: string[], user_card_id: string, request: FastifyRequest) {
     try {
       const videoUrls: string[] = []
       const photoUrls: string[] = []
