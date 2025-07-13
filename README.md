@@ -20,8 +20,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## ✨ Core Features
 
 - **REST API** with comprehensive endpoints
-- **Authentication & Authorization** with session management
-- **File Upload & Management** for event media
+- **Media dataloader** for cards
 - **Database Management** with Prisma ORM
 - **API Documentation** with Swagger/OpenAPI
 - **Containerized Deployment** with Docker
@@ -31,12 +30,12 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## 🏗️ Architecture & Technologies
 
 ### Backend Stack
-- **Framework:** NestJS 11.0.10
-- **Language:** TypeScript 5.1.3
-- **Runtime:** Node.js 18+
-- **Database ORM:** Prisma 6.4.1
+- **Framework:** NestJS
+- **Language:** TypeScript
+- **Runtime:** Node.js
+- **Database ORM:** Prisma
 - **Web Server:** Fastify
-- **Validation:** Zod 3.24.2
+- **Validation:** Zod
 - **Documentation:** Swagger/OpenAPI
 
 ### Database & Infrastructure
@@ -47,19 +46,28 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 - **Package Manager:** Yarn
 
 ### Development Tools
-- **Testing:** Jest 29.5.0
+- **Testing:** Jest
 - **Linting:** ESLint 9.21.0 with TypeScript support
-- **Code Quality:** Prettier, Husky, Commitlint
-- **Build:** TypeScript compiler, ts-node
+- **Code Quality:** Prettier, Husky, Commitlint, Stylelint
+- **Build:** nest js
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+- Installed direnv
 - Node.js 18+
 - Yarn package manager
 - PostgreSQL database
 - Redis server (for session storage)
 - (Optional) Docker & Docker Compose for containerized deployment
+
+```aiignore
+sudo apt install direnv -y
+sudo zypper install direnv
+sudo pacman -Syu direnv
+sudo dnf install direnv
+sudo yum install direnv
+```
 
 ### 1. Clone Repository
 ```aiignore
@@ -101,6 +109,7 @@ export SESSION_COOKIE_SECURE=""
 export SESSION_COOKIE_MAX_AGE=""
 export CONNECTION_TIMEOUT=""
 export BODY_LIMIT=""
+export SESSION_SECRET="your_very_long_secret__at_least_32_chars_long"
 ```
 ### 3. Installation
 Install dependencies:
@@ -161,4 +170,3 @@ yarn lint && yarn format
 # Database management
 yarn prisma studio
 ```
-
