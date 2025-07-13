@@ -1,10 +1,10 @@
 {
-  "name": "nest-api",
+  "name": "theaters_etl",
   "version": "1.0.0",
-  "description": "simple api",
+  "description": "backend theaters",
   "author": "vwency",
   "private": true,
-  "license": "GNU",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
