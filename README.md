@@ -78,6 +78,15 @@ cd theater_platform_backend
 ### 2. Environment Setup
 Create a `.envrc` file based on the example: and execute `direnv allow`
 
+### 3. Run postgres and Redis (you can use Docker)
+```aiignore
+# PostgreSQL
+docker run -d --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mydb -p 5432:5432 docker.io/postgres:17
+
+# Redis
+docker run -d --name redis -p 6379:6379 docker.io/redis:alpine
+```
+
 ```
 export DATABASE_TYPE=""
 export DATABASE_HOST=""
