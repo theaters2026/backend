@@ -7,5 +7,3 @@ export * from './upload/file-upload.error'
 export * from './multipart/multipart-processing.error'
 
 export * from './media/media-save.error'
-
-export * from './handlers/error-handler.service'

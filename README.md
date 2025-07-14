@@ -15,7 +15,9 @@
 
 ## 📖 Description
 
-A robust backend API system built with NestJS and TypeScript for managing cultural events. The system provides comprehensive REST API endpoints for event management, user authentication, and data processing with modern development practices and containerized deployment.
+A robust backend API system built with NestJS and TypeScript for managing cultural events. The system provides
+comprehensive REST API endpoints for event management, user authentication, and data processing with modern development
+practices and containerized deployment.
 
 ## ✨ Core Features
 
@@ -30,6 +32,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## 🏗️ Architecture & Technologies
 
 ### Backend Stack
+
 - **Framework:** NestJS
 - **Language:** TypeScript
 - **Runtime:** Node.js
@@ -39,6 +42,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 - **Documentation:** Swagger/OpenAPI
 
 ### Database & Infrastructure
+
 - **Database:** PostgreSQL
 - **Cache & Sessions:** Redis
 - **Containerization:** Docker & Docker Compose
@@ -46,6 +50,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 - **Package Manager:** Yarn
 
 ### Development Tools
+
 - **Testing:** Jest
 - **Linting:** ESLint 9.21.0 with TypeScript support
 - **Code Quality:** Prettier, Husky, Commitlint, Stylelint
@@ -54,6 +59,7 @@ A robust backend API system built with NestJS and TypeScript for managing cultur
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Installed direnv
 - Node.js 18+
 - Yarn package manager
@@ -70,15 +76,18 @@ sudo yum install direnv
 ```
 
 ### 1. Clone Repository
+
 ```aiignore
 bash git clone ssh://git@gitverse.ru:2222/studentlabs/theater_platform_backend.git cd theater_platform_backen
 cd theater_platform_backend
 ```
 
 ### 2. Environment Setup
+
 Create a `.envrc` file based on the example: and execute `direnv allow`
 
 ### 3. Run postgres and Redis (you can use Docker)
+
 ```aiignore
 # PostgreSQL
 docker run -d --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mydb -p 5432:5432 docker.io/postgres:17
@@ -120,7 +129,9 @@ export CONNECTION_TIMEOUT=""
 export BODY_LIMIT=""
 export SESSION_SECRET="your_very_long_secret__at_least_32_chars_long"
 ```
+
 ### 3. Installation
+
 Install dependencies:
 
 ```bash
@@ -134,38 +145,44 @@ yarn prisma migrate dev
 yarn prisma generate
 ```
 
-
 ### 5. Running the Application
-   Start the development server:
+
+Start the development server:
 
 ```aiignore
 yarn start:dev
 ```
 
 ## 🐳 Docker Deployment (Alternative)
+
 If you prefer containerized deployment:
+
 ``` bash
 docker-compose up -d
 ```
+
 This will start:
+
 - **PostgreSQL database** - Primary data storage
 - **Redis server** - Session management and caching
 - **NestJS application** - Main API server
 
 ## 🛠️ Development Commands
 
-| Command | Description |
-| --- | --- |
-| `yarn build` | Compile TypeScript to JavaScript |
-| `yarn start` | Run production server |
-| `yarn start:dev` | Run development server with hot reload |
-| `yarn test` | Run unit tests |
-| `yarn test:e2e` | Run end-to-end tests |
-| `yarn test:cov` | Run tests with coverage |
-| `yarn lint` | Run linter |
-| `yarn format` | Format code with Prettier |
+| Command              | Description                                  |
+|----------------------|----------------------------------------------|
+| `yarn build`         | Compile TypeScript to JavaScript             |
+| `yarn start`         | Run production server                        |
+| `yarn start:dev`     | Run development server with hot reload       |
+| `yarn test`          | Run unit tests                               |
+| `yarn test:e2e`      | Run end-to-end tests                         |
+| `yarn test:cov`      | Run tests with coverage                      |
+| `yarn lint`          | Run linter                                   |
+| `yarn format`        | Format code with Prettier                    |
 | `yarn prisma studio` | Launch Prisma Studio for database management |
+
 ### Quick Development Workflow
+
 ``` bash
 # Development with hot reload
 yarn start:dev
