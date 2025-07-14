@@ -38,15 +38,7 @@ export class AuthService {
       },
     })
 
-    if (!newUser.id || !newUser.username || !newUser.role) {
-      throw new Error('User data is incomplete')
-    }
-
-    const tokens = await this.getTokens(newUser.id, newUser.username, newUser.role)
-
-    await this.saveTokensToDatabase(newUser.id, tokens.access_token, tokens.refresh_token)
-
-    return tokens
+    return this.generateUserTokens(newUser)
   }
 
   async signinLocal(dto: LoginDto): Promise<Tokens> {
@@ -59,15 +51,7 @@ export class AuthService {
     const passwordMatches = await argon.verify(user.hash, dto.password)
     if (!passwordMatches) throw new ForbiddenException('Access Denied')
 
-    if (!user.id || !user.username || !user.role) {
-      throw new Error('User data is incomplete')
-    }
-
-    const tokens = await this.getTokens(user.id, user.username, user.role)
-
-    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
-
-    return tokens
+    return this.generateUserTokens(user)
   }
 
   async login(dto: LoginDto): Promise<Tokens> {
@@ -96,8 +80,7 @@ export class AuthService {
       decoded = await this.jwt.verifyAsync(refreshToken, {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       throw new ForbiddenException('Invalid refresh token')
     }
 
@@ -119,15 +102,7 @@ export class AuthService {
       throw new ForbiddenException('Access Denied')
     }
 
-    if (!user.id || !user.username || !user.role) {
-      throw new Error('User data is incomplete')
-    }
-
-    const tokens = await this.getTokens(user.id, user.username, user.role)
-
-    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
-
-    return tokens
+    return this.generateUserTokens(user)
   }
 
   async validateUser(dto: AuthDto): Promise<User> {
@@ -151,14 +126,21 @@ export class AuthService {
 
     if (!user || !user.hashedAccessToken) return false
 
-    return argon.verify(user.hashedAccessToken, accessToken)
+    return await argon.verify(user.hashedAccessToken, accessToken)
   }
 
-  /**
-   * @param userId - ID пользователя
-   * @param accessToken - токен доступа
-   * @param refreshToken - токен обновления
-   */
+  private async generateUserTokens(user: User): Promise<Tokens> {
+    if (!user.id || !user.username || !user.role) {
+      throw new Error('User data is incomplete')
+    }
+
+    const tokens = await this.getTokens(user.id, user.username, user.role)
+
+    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
+
+    return tokens
+  }
+
   private async saveTokensToDatabase(
     userId: string,
     accessToken: string,
@@ -176,12 +158,6 @@ export class AuthService {
     })
   }
 
-  /**
-   * @param userId - ID пользователя
-   * @param username - имя пользователя
-   * @param role - роль пользователя
-   * @returns объект с токенами
-   */
   private async getTokens(userId: string, username: string, role: string): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(
