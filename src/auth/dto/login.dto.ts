@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { z } from 'zod'
-
-export const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
-  email: z.string().email().optional(),
-})
+import { loginSchema } from './login.schema'
 
 export class LoginDto {
   static schema = loginSchema
@@ -15,6 +9,7 @@ export class LoginDto {
 
   @ApiProperty()
   password: string
+
   @ApiProperty({ required: false })
   email?: string
 }
