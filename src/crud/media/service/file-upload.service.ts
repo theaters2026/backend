@@ -4,45 +4,42 @@ import { createWriteStream, promises as fsPromises } from 'fs'
 import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { FileValidationService } from './file-validation.service'
-import { FileProcessingContext, ProcessedFile } from '../interfaces'
-import { DirectoryCreationResult, FileUploadResult } from '../interfaces'
-import { DirectoryCreationError, FileSaveError, ErrorHandlerService } from '../errors'
+import {
+  DirectoryCreationResult,
+  FileProcessingContext,
+  FileUploadResult,
+  ProcessedFile,
+} from '../interfaces'
+import { DirectoryCreationError, FileSaveError } from '../errors'
 
 @Injectable()
 export class FileUploadService {
   private readonly logger = new Logger(FileUploadService.name)
 
-  constructor(
-    private readonly fileValidationService: FileValidationService,
-    private readonly errorHandler: ErrorHandlerService,
-  ) {}
+  constructor(private readonly fileValidationService: FileValidationService) {}
 
   async processFile(file: MultipartFile, context: FileProcessingContext): Promise<ProcessedFile> {
-    try {
-      this.fileValidationService.validateFile(file)
+    this.fileValidationService.validateFile(file)
 
-      const fileExtension = path.extname(file.filename).toLowerCase()
-      const subFolder = this.fileValidationService.getSubFolder(fileExtension)
-      const fileName = this.generateFileName(fileExtension)
+    const fileExtension = path.extname(file.filename).toLowerCase()
+    const subFolder = this.fileValidationService.getSubFolder(fileExtension)
+    const fileName = this.generateFileName(fileExtension)
 
-      const uploadDir = path.join(
-        process.cwd(),
-        'static',
-        subFolder,
-        context.userId,
-        context.userCardId,
-      )
-      const uploadPath = path.join(uploadDir, fileName)
+    const uploadDir = path.join(
+      process.cwd(),
+      'static',
+      subFolder,
+      context.userId,
+      context.userCardId,
+    )
+    const uploadPath = path.join(uploadDir, fileName)
 
-      await this.ensureDirectoryExists(uploadDir)
-      await this.saveFile(file, uploadPath)
+    await this.ensureDirectoryExists(uploadDir)
+    await this.saveFile(file, uploadPath)
 
-      return {
-        file,
-        uploadPath,
-      }
-    } catch (error) {
-      this.errorHandler.handleError(error, 'file processing')
+    return {
+      file,
+      uploadPath,
     }
   }
 

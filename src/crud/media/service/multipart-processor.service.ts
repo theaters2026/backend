@@ -5,57 +5,49 @@ import { FileUploadService } from './file-upload.service'
 import { ProcessedFile, UploadResult } from '../interfaces'
 import {
   InvalidMultipartRequestError,
-  NoFilesUploadedError,
   MissingUserCardIdError,
-  ErrorHandlerService,
+  NoFilesUploadedError,
 } from '../errors'
 
 @Injectable()
 export class MultipartProcessorService {
   private readonly logger = new Logger(MultipartProcessorService.name)
 
-  constructor(
-    private readonly fileUploadService: FileUploadService,
-    private readonly errorHandler: ErrorHandlerService,
-  ) {}
+  constructor(private readonly fileUploadService: FileUploadService) {}
 
   async processMultipartRequest(request: FastifyRequest): Promise<UploadResult> {
-    try {
-      await this.validateMultipartRequest(request)
+    await this.validateMultipartRequest(request)
 
-      const uploadedFiles: MultipartFile[] = []
-      const uploadPaths: string[] = []
-      let userCardId: string | null = null
-      let partNumber = 1
+    const uploadedFiles: MultipartFile[] = []
+    const uploadPaths: string[] = []
+    let userCardId: string | null = null
+    let partNumber = 1
 
-      this.logger.log('✅ Multipart request detected, processing parts')
+    this.logger.log('✅ Multipart request detected, processing parts')
 
-      for await (const part of request.parts()) {
-        this.logger.log(`📌 Processing part #${partNumber}: ${part.fieldname}, type: ${part.type}`)
+    for await (const part of request.parts()) {
+      this.logger.log(`📌 Processing part #${partNumber}: ${part.fieldname}, type: ${part.type}`)
 
-        if (part.type === 'file' && part.fieldname === 'file') {
-          const processedFile = await this.processFilePart(part, request)
-          uploadedFiles.push(processedFile.file)
-          uploadPaths.push(processedFile.uploadPath)
-        }
-
-        if (part.type === 'field' && part.fieldname === 'userCardId') {
-          userCardId = part.value as string
-          this.logger.log(`✅ Received userCardId: ${userCardId}`)
-        }
-
-        partNumber++
+      if (part.type === 'file' && part.fieldname === 'file') {
+        const processedFile = await this.processFilePart(part, request)
+        uploadedFiles.push(processedFile.file)
+        uploadPaths.push(processedFile.uploadPath)
       }
 
-      await this.validateProcessingResults(uploadedFiles, userCardId, request)
-
-      return {
-        uploadedFiles,
-        uploadPaths,
-        userCardId: userCardId || request.session.user_card_id,
+      if (part.type === 'field' && part.fieldname === 'userCardId') {
+        userCardId = part.value as string
+        this.logger.log(`✅ Received userCardId: ${userCardId}`)
       }
-    } catch (error) {
-      this.errorHandler.handleError(error, 'multipart processing')
+
+      partNumber++
+    }
+
+    await this.validateProcessingResults(uploadedFiles, userCardId, request)
+
+    return {
+      uploadedFiles,
+      uploadPaths,
+      userCardId: userCardId || request.session.user_card_id,
     }
   }
 

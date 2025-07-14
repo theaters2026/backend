@@ -4,16 +4,13 @@ import * as mime from 'mime-types'
 import { FastifyRequest } from 'fastify'
 import { MEDIA_TYPES, MediaType } from '../constants'
 import { MediaSaveResult } from '../interfaces'
-import { UnknownFileTypeError, UnsupportedFileTypeError, ErrorHandlerService } from '../errors'
+import { UnknownFileTypeError, UnsupportedFileTypeError } from '../errors'
 
 @Injectable()
 export class MediaService {
   private readonly logger = new Logger(MediaService.name)
 
-  constructor(
-    private prisma: PrismaService,
-    private readonly errorHandler: ErrorHandlerService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async saveMediaStream(
     paths: string[],
@@ -47,7 +44,8 @@ export class MediaService {
         eventId,
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'media saving')
+      this.logger.error('Error in media saving:', error)
+      throw error
     } finally {
       request.userCardId = null
     }

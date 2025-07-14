@@ -1,28 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { MultipartFile } from '@fastify/multipart'
 import * as path from 'path'
-import { FILE_TYPES, AllowedMimeType, AllowedExtension } from '../constants'
-import { UPLOAD_FOLDERS, UploadFolder } from '../constants'
-import { InvalidFileTypeError, ErrorHandlerService } from '../errors'
+import {
+  AllowedExtension,
+  AllowedMimeType,
+  FILE_TYPES,
+  UPLOAD_FOLDERS,
+  UploadFolder,
+} from '../constants'
+import { InvalidFileTypeError } from '../errors'
 
 @Injectable()
 export class FileValidationService {
   private readonly logger = new Logger(FileValidationService.name)
 
-  constructor(private readonly errorHandler: ErrorHandlerService) {}
-
   validateFile(file: MultipartFile): void {
-    try {
-      this.logger.log(`✅ File received: ${file.filename}`)
+    this.logger.log(`✅ File received: ${file.filename}`)
 
-      const fileExtension = path.extname(file.filename).toLowerCase()
+    const fileExtension = path.extname(file.filename).toLowerCase()
 
-      if (!this.isValidFileType(file.mimetype, fileExtension)) {
-        this.logger.error('❌ Error: Invalid file type')
-        throw new InvalidFileTypeError(file.mimetype, file.filename)
-      }
-    } catch (error) {
-      this.errorHandler.handleError(error, 'file validation')
+    if (!this.isValidFileType(file.mimetype, fileExtension)) {
+      this.logger.error('❌ Error: Invalid file type')
+      throw new InvalidFileTypeError(file.mimetype, file.filename)
     }
   }
 
