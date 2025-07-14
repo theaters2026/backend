@@ -128,6 +128,7 @@ export SESSION_COOKIE_MAX_AGE=""
 export CONNECTION_TIMEOUT=""
 export BODY_LIMIT=""
 export SESSION_SECRET="your_very_long_secret__at_least_32_chars_long"
+export JWT_ACCESS_SECRET="your_very_long_secret__at_least_32_chars_long133your_very_long_secret__at_least_32_chars_long133"
 ```
 
 ### 3. Installation
