@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { CrudModule } from './crud/crud.module'
 import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
+import { MediaModule } from './media/media.module'
 
 @Module({
   controllers: [],
@@ -14,6 +15,7 @@ import { AuthModule } from './auth/auth.module'
     }),
     CrudModule,
     AuthModule,
+    MediaModule,
   ],
 })
 export class AppModule {}
