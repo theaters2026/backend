@@ -37,8 +37,7 @@ export class RtGuard implements CanActivate {
 
       request.user = payload
       request.refreshToken = token
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid refresh token')
     }
 

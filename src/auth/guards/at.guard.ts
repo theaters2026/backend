@@ -37,8 +37,7 @@ export class AtGuard implements CanActivate {
       payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid access token signature')
     }
 
