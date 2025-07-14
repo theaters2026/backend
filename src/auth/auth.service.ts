@@ -6,6 +6,7 @@ import * as argon from 'argon2'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 import { AuthDto, LoginDto } from './dto'
+import { Tokens } from './types'
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: AuthDto): Promise<{ access_token: string; refresh_token: string }> {
+  async signupLocal(dto: AuthDto, session?: any): Promise<Tokens> {
     const existingUser = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: dto.username }, ...(dto.email ? [{ email: dto.email }] : [])],
@@ -36,17 +37,23 @@ export class AuthService {
         role: 'user',
       },
     })
+
     if (!newUser.id || !newUser.username || !newUser.role) {
       throw new Error('User data is incomplete')
     }
 
     const tokens = await this.getTokens(newUser.id, newUser.username, newUser.role)
-    await this.saveTokens(newUser.id, tokens.access_token, tokens.refresh_token)
+
+    await this.saveTokensToDatabase(newUser.id, tokens.access_token, tokens.refresh_token)
+
+    if (session) {
+      this.saveTokensToSession(session, tokens, newUser)
+    }
 
     return tokens
   }
 
-  async signinLocal(dto: LoginDto): Promise<{ access_token: string; refresh_token: string }> {
+  async signinLocal(dto: LoginDto, session?: any): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     })
@@ -55,20 +62,27 @@ export class AuthService {
 
     const passwordMatches = await argon.verify(user.hash, dto.password)
     if (!passwordMatches) throw new ForbiddenException('Access Denied')
+
     if (!user.id || !user.username || !user.role) {
       throw new Error('User data is incomplete')
     }
+
     const tokens = await this.getTokens(user.id, user.username, user.role)
-    await this.saveTokens(user.id, tokens.access_token, tokens.refresh_token)
+
+    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
+
+    if (session) {
+      this.saveTokensToSession(session, tokens, user)
+    }
 
     return tokens
   }
 
-  async login(dto: LoginDto): Promise<{ access_token: string; refresh_token: string }> {
-    return this.signinLocal(dto)
+  async login(dto: LoginDto, session?: any): Promise<Tokens> {
+    return this.signinLocal(dto, session)
   }
 
-  async logout(userId: string): Promise<boolean> {
+  async logout(userId: string, session?: any): Promise<boolean> {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -76,12 +90,15 @@ export class AuthService {
         hashedAccessToken: null,
       },
     })
+
+    if (session) {
+      this.clearTokensFromSession(session)
+    }
+
     return true
   }
 
-  async refreshTokens(
-    refreshToken: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async refreshTokens(refreshToken: string, session?: any): Promise<Tokens> {
     if (!refreshToken) {
       throw new ForbiddenException('Refresh token is required')
     }
@@ -119,7 +136,12 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user.id, user.username, user.role)
-    await this.saveTokens(user.id, tokens.access_token, tokens.refresh_token)
+
+    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
+
+    if (session) {
+      this.saveTokensToSession(session, tokens, user)
+    }
 
     return tokens
   }
@@ -148,7 +170,43 @@ export class AuthService {
     return argon.verify(user.hashedAccessToken, accessToken)
   }
 
-  private async saveTokens(
+  /**
+   * @param session - объект сессии
+   * @param tokens - токены доступа и обновления
+   * @param user - данные пользователя
+   */
+  private saveTokensToSession(session: any, tokens: Tokens, user: User): void {
+    session.tokens = {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+    }
+
+    session.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    }
+  }
+
+  /**
+   * @param session - объект сессии
+   */
+  private clearTokensFromSession(session: any): void {
+    if (session.tokens) {
+      delete session.tokens
+    }
+    if (session.user) {
+      delete session.user
+    }
+  }
+
+  /**
+   * @param userId - ID пользователя
+   * @param accessToken - токен доступа
+   * @param refreshToken - токен обновления
+   */
+  private async saveTokensToDatabase(
     userId: string,
     accessToken: string,
     refreshToken: string,
@@ -165,11 +223,13 @@ export class AuthService {
     })
   }
 
-  private async getTokens(
-    userId: string,
-    username: string,
-    role: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  /**
+   * @param userId - ID пользователя
+   * @param username - имя пользователя
+   * @param role - роль пользователя
+   * @returns объект с токенами
+   */
+  private async getTokens(userId: string, username: string, role: string): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(
         {
@@ -184,7 +244,7 @@ export class AuthService {
       ),
       this.jwt.signAsync(
         {
-          sub: userId, // Use 'sub' here as well for consistency
+          sub: userId,
           username,
           role,
         },

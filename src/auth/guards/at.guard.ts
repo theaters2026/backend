@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 
 import { AuthService } from '../auth.service'
-import { IS_PUBLIC_KEY } from '../decorators'
+import { IS_PUBLIC_KEY } from '../../common/decorators'
 
 @Injectable()
 export class AtGuard implements CanActivate {
@@ -26,10 +26,17 @@ export class AtGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest()
-    const token = this.extractTokenFromHeader(request)
+
+    // Сначала пытаемся получить токен из заголовка
+    let token = this.extractTokenFromHeader(request)
+
+    // Если токена нет в заголовке, пытаемся получить из сессии
+    if (!token) {
+      token = this.extractTokenFromSession(request)
+    }
 
     if (!token) {
-      throw new UnauthorizedException('Access token not found')
+      throw new UnauthorizedException('Access token not found in header or session')
     }
 
     let payload: any
@@ -56,5 +63,18 @@ export class AtGuard implements CanActivate {
     const authorization = (request.headers as unknown as Record<string, string>)['authorization']
     const [type, token] = authorization?.split(' ') ?? []
     return type === 'Bearer' ? token : undefined
+  }
+
+  /**
+   * Извлекает токен доступа из сессии
+   * @param request - объект запроса
+   * @returns токен доступа или undefined
+   */
+  private extractTokenFromSession(request: any): string | undefined {
+    if (!request.session || !request.session.tokens) {
+      return undefined
+    }
+
+    return request.session.tokens.access_token
   }
 }
