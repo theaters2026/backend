@@ -16,7 +16,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: AuthDto, session?: any): Promise<Tokens> {
+  async signupLocal(dto: AuthDto): Promise<Tokens> {
     const existingUser = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: dto.username }, ...(dto.email ? [{ email: dto.email }] : [])],
@@ -46,14 +46,10 @@ export class AuthService {
 
     await this.saveTokensToDatabase(newUser.id, tokens.access_token, tokens.refresh_token)
 
-    if (session) {
-      this.saveTokensToSession(session, tokens, newUser)
-    }
-
     return tokens
   }
 
-  async signinLocal(dto: LoginDto, session?: any): Promise<Tokens> {
+  async signinLocal(dto: LoginDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     })
@@ -71,18 +67,14 @@ export class AuthService {
 
     await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
 
-    if (session) {
-      this.saveTokensToSession(session, tokens, user)
-    }
-
     return tokens
   }
 
-  async login(dto: LoginDto, session?: any): Promise<Tokens> {
-    return this.signinLocal(dto, session)
+  async login(dto: LoginDto): Promise<Tokens> {
+    return this.signinLocal(dto)
   }
 
-  async logout(userId: string, session?: any): Promise<boolean> {
+  async logout(userId: string): Promise<boolean> {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -91,14 +83,10 @@ export class AuthService {
       },
     })
 
-    if (session) {
-      this.clearTokensFromSession(session)
-    }
-
     return true
   }
 
-  async refreshTokens(refreshToken: string, session?: any): Promise<Tokens> {
+  async refreshTokens(refreshToken: string): Promise<Tokens> {
     if (!refreshToken) {
       throw new ForbiddenException('Refresh token is required')
     }
@@ -139,10 +127,6 @@ export class AuthService {
 
     await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
 
-    if (session) {
-      this.saveTokensToSession(session, tokens, user)
-    }
-
     return tokens
   }
 
@@ -168,37 +152,6 @@ export class AuthService {
     if (!user || !user.hashedAccessToken) return false
 
     return argon.verify(user.hashedAccessToken, accessToken)
-  }
-
-  /**
-   * @param session - объект сессии
-   * @param tokens - токены доступа и обновления
-   * @param user - данные пользователя
-   */
-  private saveTokensToSession(session: any, tokens: Tokens, user: User): void {
-    session.tokens = {
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-    }
-
-    session.user = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    }
-  }
-
-  /**
-   * @param session - объект сессии
-   */
-  private clearTokensFromSession(session: any): void {
-    if (session.tokens) {
-      delete session.tokens
-    }
-    if (session.user) {
-      delete session.user
-    }
   }
 
   /**
