@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { CreateEventSchema } from './create-event.schema'
+import {
+  CreateEventDescriptionSchema,
+  CreateEventMediaSchema,
+  CreateEventSchema,
+} from './create-event.schema'
 
 export class CreateEventDescriptionDto {
+  static schema = CreateEventDescriptionSchema
+
   @ApiProperty({
     description: 'Minimum age requirement for the event',
     example: 18,
@@ -43,6 +49,8 @@ export class CreateEventDescriptionDto {
 }
 
 export class CreateEventMediaDto {
+  static schema = CreateEventMediaSchema
+
   @ApiProperty({
     description: 'URL of the event media content',
     example: 'https://example.com/event-image.jpg',
