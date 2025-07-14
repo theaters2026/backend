@@ -16,6 +16,19 @@ model Event {
   @@map("event")
 }
 
+model User {
+  id                String   @id @default(uuid()) @db.Uuid
+  username          String   @unique @db.VarChar
+  hash              String   @db.VarChar
+  email             String?  @db.VarChar
+  hashedAccessToken String?  @db.VarChar
+  hashedRt          String?  @db.VarChar
+  role              String?  @default("user") @db.VarChar
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("Users")
+}
+
 model EventDescription {
   id         String    @id @default(uuid()) @db.Uuid
   eventId    String?   @unique @db.Uuid
