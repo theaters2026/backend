@@ -96,41 +96,6 @@ docker run -d --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mydb 
 docker run -d --name redis -p 6379:6379 docker.io/redis:alpine
 ```
 
-```
-export DATABASE_TYPE=""
-export DATABASE_HOST=""
-export DATABASE_PORT=""
-export DATABASE_USERNAME=""
-export DATABASE_NAME=""
-export DATABASE_PASSWORD=""
-export PGDATA=""
-export BACKEND_PORT=""
-
-export DATABASE_URL="postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
-
-export SESSION_SECRET=""
-
-export REDIS_PORT=""
-export SESSION_FOLDER=""
-export REDIS_URI=""
-
-
-export MULTIPART_FILE_SIZE=""
-export MULTIPART_FIELD_SIZE=""
-export MULTIPART_PARTS=""
-export MULTIPART_FILES=""
-export MULTIPART_FIELD_NAME_SIZE=""
-
-export SESSION_COOKIE_SAME_SITE=""
-export SESSION_COOKIE_HTTP_ONLY=""
-export SESSION_COOKIE_SECURE=""
-export SESSION_COOKIE_MAX_AGE=""
-export CONNECTION_TIMEOUT=""
-export BODY_LIMIT=""
-export SESSION_SECRET="your_very_long_secret__at_least_32_chars_long"
-export JWT_ACCESS_SECRET="your_very_long_secret__at_least_32_chars_long133your_very_long_secret__at_least_32_chars_long133"
-```
-
 ### 3. Installation
 
 Install dependencies:

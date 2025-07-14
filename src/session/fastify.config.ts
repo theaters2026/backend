@@ -1,7 +1,7 @@
 import * as fastifyCookie from '@fastify/cookie'
 import * as fastifySession from '@fastify/session'
 import * as fastifyCors from '@fastify/cors'
-import { redisStore } from './providers'
+import { customRedisStore as redisStore } from './providers'
 import fastifyStatic from '@fastify/static'
 import { join } from 'path'
 import { fastifyMultipart } from '@fastify/multipart'

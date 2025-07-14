@@ -6,6 +6,7 @@ import * as argon from 'argon2'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 import { AuthDto, LoginDto } from './dto'
+import { Tokens } from './types'
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: AuthDto): Promise<{ access_token: string; refresh_token: string }> {
+  async signupLocal(dto: AuthDto): Promise<Tokens> {
     const existingUser = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: dto.username }, ...(dto.email ? [{ email: dto.email }] : [])],
@@ -36,17 +37,11 @@ export class AuthService {
         role: 'user',
       },
     })
-    if (!newUser.id || !newUser.username || !newUser.role) {
-      throw new Error('User data is incomplete')
-    }
 
-    const tokens = await this.getTokens(newUser.id, newUser.username, newUser.role)
-    await this.saveTokens(newUser.id, tokens.access_token, tokens.refresh_token)
-
-    return tokens
+    return this.generateUserTokens(newUser)
   }
 
-  async signinLocal(dto: LoginDto): Promise<{ access_token: string; refresh_token: string }> {
+  async signinLocal(dto: LoginDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     })
@@ -55,16 +50,11 @@ export class AuthService {
 
     const passwordMatches = await argon.verify(user.hash, dto.password)
     if (!passwordMatches) throw new ForbiddenException('Access Denied')
-    if (!user.id || !user.username || !user.role) {
-      throw new Error('User data is incomplete')
-    }
-    const tokens = await this.getTokens(user.id, user.username, user.role)
-    await this.saveTokens(user.id, tokens.access_token, tokens.refresh_token)
 
-    return tokens
+    return this.generateUserTokens(user)
   }
 
-  async login(dto: LoginDto): Promise<{ access_token: string; refresh_token: string }> {
+  async login(dto: LoginDto): Promise<Tokens> {
     return this.signinLocal(dto)
   }
 
@@ -76,12 +66,11 @@ export class AuthService {
         hashedAccessToken: null,
       },
     })
+
     return true
   }
 
-  async refreshTokens(
-    refreshToken: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async refreshTokens(refreshToken: string): Promise<Tokens> {
     if (!refreshToken) {
       throw new ForbiddenException('Refresh token is required')
     }
@@ -91,8 +80,7 @@ export class AuthService {
       decoded = await this.jwt.verifyAsync(refreshToken, {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       throw new ForbiddenException('Invalid refresh token')
     }
 
@@ -114,14 +102,7 @@ export class AuthService {
       throw new ForbiddenException('Access Denied')
     }
 
-    if (!user.id || !user.username || !user.role) {
-      throw new Error('User data is incomplete')
-    }
-
-    const tokens = await this.getTokens(user.id, user.username, user.role)
-    await this.saveTokens(user.id, tokens.access_token, tokens.refresh_token)
-
-    return tokens
+    return this.generateUserTokens(user)
   }
 
   async validateUser(dto: AuthDto): Promise<User> {
@@ -145,10 +126,22 @@ export class AuthService {
 
     if (!user || !user.hashedAccessToken) return false
 
-    return argon.verify(user.hashedAccessToken, accessToken)
+    return await argon.verify(user.hashedAccessToken, accessToken)
   }
 
-  private async saveTokens(
+  private async generateUserTokens(user: User): Promise<Tokens> {
+    if (!user.id || !user.username || !user.role) {
+      throw new Error('User data is incomplete')
+    }
+
+    const tokens = await this.getTokens(user.id, user.username, user.role)
+
+    await this.saveTokensToDatabase(user.id, tokens.access_token, tokens.refresh_token)
+
+    return tokens
+  }
+
+  private async saveTokensToDatabase(
     userId: string,
     accessToken: string,
     refreshToken: string,
@@ -165,11 +158,7 @@ export class AuthService {
     })
   }
 
-  private async getTokens(
-    userId: string,
-    username: string,
-    role: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  private async getTokens(userId: string, username: string, role: string): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(
         {
@@ -184,7 +173,7 @@ export class AuthService {
       ),
       this.jwt.signAsync(
         {
-          sub: userId, // Use 'sub' here as well for consistency
+          sub: userId,
           username,
           role,
         },
