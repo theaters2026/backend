@@ -12,10 +12,10 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators'
 
-import { AuthService } from './auth.service'
 import { AuthDto, LoginDto } from './dto'
 import { AtGuard, RtGuard } from './guards'
 import { Tokens } from './types'
+import { AuthService } from './services'
 
 @ApiTags('Authentication')
 @Controller('auth')

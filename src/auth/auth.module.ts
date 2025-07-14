@@ -5,8 +5,8 @@ import { PassportModule } from '@nestjs/passport'
 
 import { PrismaModule } from '../prisma/prisma.module'
 import { AuthController } from './auth.controller'
-import { AuthService } from './auth.service'
 import { AtGuard, RtGuard } from './guards'
+import { AuthService, TokenService, UserService } from './services'
 
 @Module({
   imports: [
@@ -27,6 +27,8 @@ import { AtGuard, RtGuard } from './guards'
   controllers: [AuthController],
   providers: [
     AuthService,
+    TokenService,
+    UserService,
     AtGuard,
     RtGuard,
     {

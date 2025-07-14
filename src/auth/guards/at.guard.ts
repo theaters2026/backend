@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 
-import { AuthService } from '../auth.service'
 import { IS_PUBLIC_KEY } from '../../common/decorators'
+import { AuthService } from '../services'
 
 @Injectable()
 export class AtGuard implements CanActivate {
