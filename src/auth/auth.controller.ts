@@ -7,17 +7,15 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { FastifyRequest } from 'fastify'
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators'
 
-import { AuthService } from './auth.service'
 import { AuthDto, LoginDto } from './dto'
 import { AtGuard, RtGuard } from './guards'
 import { Tokens } from './types'
+import { AuthService } from './services'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -30,8 +28,8 @@ export class AuthController {
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @ApiResponse({ status: 403, description: 'Credentials already taken' })
-  async signup(@Body() dto: AuthDto, @Req() request: FastifyRequest): Promise<Tokens> {
-    return this.authService.signupLocal(dto, request.session)
+  async signup(@Body() dto: AuthDto): Promise<Tokens> {
+    return this.authService.signupLocal(dto)
   }
 
   @Public()
@@ -40,8 +38,8 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'User successfully logged in' })
   @ApiResponse({ status: 403, description: 'Access Denied' })
-  async login(@Body() dto: LoginDto, @Req() request: FastifyRequest): Promise<Tokens> {
-    return this.authService.login(dto, request.session)
+  async login(@Body() dto: LoginDto): Promise<Tokens> {
+    return this.authService.login(dto)
   }
 
   @ApiBearerAuth()
@@ -50,11 +48,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'User successfully logged out' })
-  async logout(
-    @GetCurrentUserId() userId: string,
-    @Req() request: FastifyRequest,
-  ): Promise<boolean> {
-    return this.authService.logout(userId, request.session)
+  async logout(@GetCurrentUserId() userId: string): Promise<boolean> {
+    return this.authService.logout(userId)
   }
 
   @Public()
@@ -64,14 +59,11 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse({ status: 200, description: 'Tokens successfully refreshed' })
   @ApiResponse({ status: 403, description: 'Access Denied' })
-  async refreshTokens(
-    @Body('refreshToken') refreshToken: string,
-    @Req() request: FastifyRequest,
-  ): Promise<Tokens> {
+  async refreshTokens(@Body('refreshToken') refreshToken: string): Promise<Tokens> {
     if (!refreshToken) {
       throw new ForbiddenException('Refresh token is required')
     }
-    return this.authService.refreshTokens(refreshToken, request.session)
+    return this.authService.refreshTokens(refreshToken)
   }
 
   @ApiBearerAuth()
