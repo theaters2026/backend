@@ -1,9 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import axios, { AxiosInstance } from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { PaymentAmount, PaymentResponse } from '../interfaces/payment.interfaces'
 import { CreatePaymentDto } from '../dto/create-payment.dto'
-import { WebhookDto } from '../dto/webhook.dto'
+import {
+  PaymentCancellationException,
+  PaymentCaptureException,
+  PaymentCreationException,
+  PaymentNotFoundException,
+  YookassaApiException,
+} from '../exceptions/payment.exceptions'
 
 @Injectable()
 export class YookassaService {
@@ -12,9 +19,9 @@ export class YookassaService {
   private readonly shopId: string
   private readonly secretKey: string
 
-  constructor() {
-    this.shopId = process.env.SHOP_ID || ''
-    this.secretKey = process.env.PAYMENTS_SECRET_KEY || ''
+  constructor(private readonly configService: ConfigService) {
+    this.shopId = this.configService.get<string>('SHOP_ID') || ''
+    this.secretKey = this.configService.get<string>('PAYMENTS_SECRET_KEY') || ''
 
     if (!this.shopId) {
       throw new Error('SHOP_ID environment variable is required')
@@ -25,7 +32,7 @@ export class YookassaService {
     }
 
     this.httpClient = axios.create({
-      baseURL: 'https://api.yookassa.ru/v3',
+      baseURL: this.configService.get<string>('YOOKASSA_API_URL', 'https://api.yookassa.ru/v3'),
       auth: {
         username: this.shopId,
         password: this.secretKey,
@@ -33,6 +40,7 @@ export class YookassaService {
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 30000,
     })
   }
 
@@ -52,9 +60,18 @@ export class YookassaService {
       return response.data
     } catch (error) {
       this.logger.error('Error creating payment:', error.response?.data || error.message)
-      throw new Error(
-        `Failed to create payment: ${error.response?.data?.description || error.message}`,
-      )
+
+      if (error.response?.status === 400) {
+        throw new PaymentCreationException(
+          error.response?.data?.description || 'Invalid payment data',
+        )
+      }
+
+      if (error.response?.status === 401) {
+        throw new YookassaApiException('Authentication failed', 401)
+      }
+
+      throw new PaymentCreationException(error.message)
     }
   }
 
@@ -68,9 +85,16 @@ export class YookassaService {
       return response.data
     } catch (error) {
       this.logger.error('Error getting payment:', error.response?.data || error.message)
-      throw new Error(
-        `Failed to get payment: ${error.response?.data?.description || error.message}`,
-      )
+
+      if (error.response?.status === 404) {
+        throw new PaymentNotFoundException(paymentId)
+      }
+
+      if (error.response?.status === 401) {
+        throw new YookassaApiException('Authentication failed', 401)
+      }
+
+      throw new YookassaApiException(error.message, error.response?.status)
     }
   }
 
@@ -94,9 +118,19 @@ export class YookassaService {
       return response.data
     } catch (error) {
       this.logger.error('Error capturing payment:', error.response?.data || error.message)
-      throw new Error(
-        `Failed to capture payment: ${error.response?.data?.description || error.message}`,
-      )
+
+      if (error.response?.status === 404) {
+        throw new PaymentNotFoundException(paymentId)
+      }
+
+      if (error.response?.status === 400) {
+        throw new PaymentCaptureException(
+          paymentId,
+          error.response?.data?.description || 'Invalid capture request',
+        )
+      }
+
+      throw new PaymentCaptureException(paymentId, error.message)
     }
   }
 
@@ -120,20 +154,19 @@ export class YookassaService {
       return response.data
     } catch (error) {
       this.logger.error('Error cancelling payment:', error.response?.data || error.message)
-      throw new Error(
-        `Failed to cancel payment: ${error.response?.data?.description || error.message}`,
-      )
-    }
-  }
 
-  validateWebhook(dto: WebhookDto, signature: string): boolean {
-    this.logger.log(`Validating webhook signature: ${signature}`)
-    try {
-      this.logger.log(`Validating webhook for event: ${dto.event}`)
-      return true
-    } catch (error) {
-      this.logger.error('Error validating webhook:', error.message)
-      return false
+      if (error.response?.status === 404) {
+        throw new PaymentNotFoundException(paymentId)
+      }
+
+      if (error.response?.status === 400) {
+        throw new PaymentCancellationException(
+          paymentId,
+          error.response?.data?.description || 'Invalid cancellation request',
+        )
+      }
+
+      throw new PaymentCancellationException(paymentId, error.message)
     }
   }
 }

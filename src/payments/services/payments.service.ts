@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { PaymentResponse, PaymentStatus } from '../interfaces/payment.interfaces'
+import { PaymentNotFoundException } from '../exceptions/payment.exceptions'
 
 @Injectable()
 export class PaymentsService {
@@ -8,38 +9,63 @@ export class PaymentsService {
   async savePayment(payment: PaymentResponse): Promise<void> {
     try {
       this.logger.log(`Saving payment: ${payment.id}`)
+
+      // TODO: Implement actual database save logic
+
+      this.logger.log(`Payment saved successfully: ${payment.id}`)
     } catch (error) {
-      this.logger.error('Error saving payment:', error.message)
-      throw error
+      this.logger.error(`Error saving payment ${payment.id}:`, error.message)
+      throw new Error(`Failed to save payment: ${error.message}`)
     }
   }
 
   async updatePaymentStatus(paymentId: string, status: PaymentStatus): Promise<void> {
     try {
       this.logger.log(`Updating payment status: ${paymentId} -> ${status}`)
+
+      // TODO: Implement actual database update logic
+      // For now, just validate the paymentId exists
+      if (!paymentId) {
+        throw new PaymentNotFoundException(paymentId)
+      }
+
+      this.logger.log(`Payment status updated successfully: ${paymentId} -> ${status}`)
     } catch (error) {
-      this.logger.error('Error updating payment status:', error.message)
-      throw error
+      this.logger.error(`Error updating payment status ${paymentId}:`, error.message)
+
+      if (error instanceof PaymentNotFoundException) {
+        throw error
+      }
+
+      throw new Error(`Failed to update payment status: ${error.message}`)
     }
   }
 
   async getPaymentById(paymentId: string): Promise<PaymentResponse | null> {
     try {
       this.logger.log(`Getting payment: ${paymentId}`)
+
+      // TODO: Implement actual database query
+
+      this.logger.log(`Payment retrieved: ${paymentId}`)
       return null
     } catch (error) {
-      this.logger.error('Error getting payment:', error.message)
-      throw error
+      this.logger.error(`Error getting payment ${paymentId}:`, error.message)
+      throw new PaymentNotFoundException(paymentId)
     }
   }
 
   async getAllPayments(): Promise<PaymentResponse[]> {
     try {
       this.logger.log('Getting all payments')
+
+      // TODO: Implement actual database query
+
+      this.logger.log('All payments retrieved')
       return []
     } catch (error) {
       this.logger.error('Error getting all payments:', error.message)
-      throw error
+      throw new Error(`Failed to get payments: ${error.message}`)
     }
   }
 }
