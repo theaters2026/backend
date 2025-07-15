@@ -9,10 +9,21 @@ import { WebhookDto } from '../dto/webhook.dto'
 export class YookassaService {
   private readonly logger = new Logger(YookassaService.name)
   private readonly httpClient: AxiosInstance
-  private readonly shopId = '1123803'
-  private readonly secretKey = 'test_uIPIAckSa5ySMBGMTNKGtoogBSWhhKuJCqNCXKDMLOI'
+  private readonly shopId: string
+  private readonly secretKey: string
 
   constructor() {
+    this.shopId = process.env.SHOP_ID || ''
+    this.secretKey = process.env.PAYMENTS_SECRET_KEY || ''
+
+    if (!this.shopId) {
+      throw new Error('SHOP_ID environment variable is required')
+    }
+
+    if (!this.secretKey) {
+      throw new Error('PAYMENTS_SECRET_KEY environment variable is required')
+    }
+
     this.httpClient = axios.create({
       baseURL: 'https://api.yookassa.ru/v3',
       auth: {
