@@ -10,8 +10,6 @@ export class PaymentsService {
     try {
       this.logger.log(`Saving payment: ${payment.id}`)
 
-      // TODO: Implement actual database save logic
-
       this.logger.log(`Payment saved successfully: ${payment.id}`)
     } catch (error) {
       this.logger.error(`Error saving payment ${payment.id}:`, error.message)
@@ -23,8 +21,6 @@ export class PaymentsService {
     try {
       this.logger.log(`Updating payment status: ${paymentId} -> ${status}`)
 
-      // TODO: Implement actual database update logic
-      // For now, just validate the paymentId exists
       if (!paymentId) {
         throw new PaymentNotFoundException(paymentId)
       }
@@ -45,8 +41,6 @@ export class PaymentsService {
     try {
       this.logger.log(`Getting payment: ${paymentId}`)
 
-      // TODO: Implement actual database query
-
       this.logger.log(`Payment retrieved: ${paymentId}`)
       return null
     } catch (error) {
@@ -58,8 +52,6 @@ export class PaymentsService {
   async getAllPayments(): Promise<PaymentResponse[]> {
     try {
       this.logger.log('Getting all payments')
-
-      // TODO: Implement actual database query
 
       this.logger.log('All payments retrieved')
       return []

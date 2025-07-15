@@ -25,7 +25,8 @@ export class WebhookService {
     try {
       this.logger.log(`Processing webhook event: ${dto.event} for payment: ${dto.object.id}`)
 
-      if (!this.validateWebhookSignature(dto, signature)) {
+      const isValidSignature = await this.validateWebhookSignature(dto, signature)
+      if (!isValidSignature) {
         throw new WebhookValidationException('Invalid webhook signature')
       }
 
@@ -76,7 +77,7 @@ export class WebhookService {
     }
   }
 
-  validateWebhookSignature(dto: WebhookDto, signature: string): boolean {
+  async validateWebhookSignature(dto: WebhookDto, signature: string): Promise<boolean> {
     if (!signature) {
       this.logger.warn('No signature provided for webhook validation')
       return false
