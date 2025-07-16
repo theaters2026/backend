@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsString } from 'class-validator'
+import { validateTokenSchema } from './validate-token.schema'
 
-export class RefreshTokenDto {
+export class ValidateTokenDto {
+  static schema = validateTokenSchema
+
   @ApiProperty({
-    description: 'Refresh token obtained from previous authentication',
+    description: 'Access token to validate',
     example:
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
     type: String,
@@ -11,5 +14,5 @@ export class RefreshTokenDto {
   })
   @IsString()
   @IsNotEmpty()
-  refreshToken: string
+  accessToken: string
 }
