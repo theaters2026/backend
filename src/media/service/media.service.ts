@@ -27,13 +27,7 @@ export class MediaService {
 
         const mediaType = this.getMediaType(fileType)
 
-        await this.prisma.eventMedia.create({
-          data: {
-            eventId,
-            url: path,
-            type: mediaType,
-          },
-        })
+        this.logger.log(`Saving media: ${mediaType}`)
 
         this.logger.log(`✅ Media saved for event ${eventId}: ${path}`)
       }
