@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { EventService } from '../services/event.service'
 import { Public } from 'src/common/decorators'
+import { BigIntSerializerInterceptor } from '../../../common/interceptors/bigint-serializer.interceptor'
 
 @ApiTags('Event Management')
 @Controller('event')
+@UseInterceptors(BigIntSerializerInterceptor)
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
