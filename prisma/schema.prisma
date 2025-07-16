@@ -11,6 +11,7 @@ model Show {
   id            String        @id @default(uuid()) @db.Uuid
   externalId    Int           @unique @map("external_id")
   name          String
+  detailed_url   String?       @map("detailed_url")
   image         String?
   desc          String?       @db.Text
   partnerId     Int?          @map("partner_id")
