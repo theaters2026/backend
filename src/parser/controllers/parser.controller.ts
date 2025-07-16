@@ -4,7 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { ParserQueryDto, ParserResponseDto } from '../dto'
 
-@ApiTags('parser')
+@ApiTags('Parser')
 @Controller('sync-data')
 export class ParserController {
   constructor(private readonly parserService: ParserService) {}
