@@ -16,7 +16,7 @@ export class ExternalApiService {
           headers: {
             'Content-Type': 'application/json',
           },
-          timeout: 30000, // 30 seconds timeout
+          timeout: 30000,
         },
       )
 

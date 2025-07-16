@@ -15,7 +15,6 @@ export class DataSyncService {
     this.logger.log(`Starting data sync for shop_id: ${shopId}`)
 
     try {
-      // Получаем данные из внешнего API
       const apiData = await this.externalApiService.fetchShowsFromApi(shopId)
 
       if (!apiData.shows || apiData.shows.length === 0) {

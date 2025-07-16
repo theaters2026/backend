@@ -50,14 +50,11 @@ export class DataProcessorService {
 
       stats.shows++
 
-      // Обрабатываем категории показа
       if (apiShow.show_categories && apiShow.show_categories.length > 0) {
-        // Удаляем старые категории
         await this.prisma.showCategory.deleteMany({
           where: { showId: show.id },
         })
 
-        // Создаем новые категории
         for (const category of apiShow.show_categories) {
           await this.prisma.showCategory.create({
             data: {
@@ -69,7 +66,6 @@ export class DataProcessorService {
         }
       }
 
-      // Обрабатываем события
       if (apiShow.events && apiShow.events.length > 0) {
         for (const apiEvent of apiShow.events) {
           await this.processEvent(apiEvent, show.id, stats)
