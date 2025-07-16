@@ -1,7 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common'
 import { ParserService } from '../services/parser.service'
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
+import { ParserQueryDto, ParserResponseDto } from '../dto'
 
 @ApiTags('parser')
 @Controller('sync-data')
@@ -10,33 +11,17 @@ export class ParserController {
 
   @Public()
   @Get('info')
-  @ApiOperation({
-    summary: 'Get information from poster',
-    description:
-      'Starts parsing data from poster and outputs information to console. You can pass a URL to parse a specific page or leave empty for default parsing',
-  })
-  @ApiQuery({
-    name: 'url',
-    required: false,
-    description: 'URL for parsing a specific page',
-    type: String,
-  })
+  @ApiOperation({ summary: 'Get information from poster' })
   @ApiResponse({
     status: 200,
     description: 'Information successfully retrieved and output to console',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-        count: { type: 'number' },
-      },
-    },
+    type: ParserResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error during parsing',
   })
-  async getInfo(@Query('url') url?: string) {
-    return this.parserService.getInfo(url)
+  async getInfo(@Query() query: ParserQueryDto): Promise<ParserResponseDto> {
+    return this.parserService.getInfo(query.url)
   }
 }
