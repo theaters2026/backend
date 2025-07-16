@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { ApiBuilding, ApiEvent, ApiShow, ApiShowsResponse } from '../types/api-types'
 import axios, { AxiosResponse } from 'axios'
@@ -264,6 +264,34 @@ export class EventService {
     }
   }
 
+  async getShowById(id: string): Promise<any> {
+    try {
+      const show = await this.prisma.show.findUnique({
+        where: { id },
+        include: {
+          events: {
+            include: {
+              building: true,
+            },
+          },
+          showCategories: true,
+        },
+      })
+
+      if (!show) {
+        throw new NotFoundException(`Show with ID ${id} not found`)
+      }
+
+      return show
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error
+      }
+      this.logger.error(`Error fetching show ${id}`, error.stack)
+      throw new InternalServerErrorException('Failed to fetch show')
+    }
+  }
+
   async getAllEvents(): Promise<any[]> {
     try {
       return await this.prisma.event.findMany({
@@ -278,6 +306,34 @@ export class EventService {
     } catch (error) {
       this.logger.error(`Error fetching events`, error.stack)
       throw new InternalServerErrorException('Failed to fetch events')
+    }
+  }
+
+  async getEventById(id: string): Promise<any> {
+    try {
+      const event = await this.prisma.event.findUnique({
+        where: { id },
+        include: {
+          show: {
+            include: {
+              showCategories: true,
+            },
+          },
+          building: true,
+        },
+      })
+
+      if (!event) {
+        throw new NotFoundException(`Event with ID ${id} not found`)
+      }
+
+      return event
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error
+      }
+      this.logger.error(`Error fetching event ${id}`, error.stack)
+      throw new InternalServerErrorException('Failed to fetch event')
     }
   }
 

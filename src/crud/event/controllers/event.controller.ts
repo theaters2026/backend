@@ -76,6 +76,7 @@ export class EventController {
           id: { type: 'string', format: 'uuid' },
           externalId: { type: 'number' },
           name: { type: 'string' },
+          detailedUrl: { type: 'string', nullable: true },
           image: { type: 'string', nullable: true },
           desc: { type: 'string', nullable: true },
           partnerId: { type: 'number' },
@@ -101,6 +102,58 @@ export class EventController {
   })
   async getAllShows() {
     return this.eventService.getAllShows()
+  }
+
+  @Public()
+  @Get('shows/:id')
+  @ApiOperation({
+    summary: 'Get show by ID',
+    description: 'Retrieves a specific show by its UUID with all related data',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Show UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Show retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        externalId: { type: 'number' },
+        name: { type: 'string' },
+        detailedUrl: { type: 'string', nullable: true },
+        image: { type: 'string', nullable: true },
+        desc: { type: 'string', nullable: true },
+        partnerId: { type: 'number' },
+        ageLimit: { type: 'number' },
+        shortInfo: { type: 'string', nullable: true },
+        fullInfo: { type: 'string', nullable: true },
+        duration: { type: 'string', nullable: true },
+        minPrice: { type: 'number', nullable: true },
+        maxPrice: { type: 'number', nullable: true },
+        isPushkin: { type: 'boolean' },
+        shopId: { type: 'string' },
+        events: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+        showCategories: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Show not found',
+  })
+  async getShowById(@Param('id') id: string) {
+    return this.eventService.getShowById(id)
   }
 
   @Public()
@@ -136,6 +189,65 @@ export class EventController {
   }
 
   @Public()
+  @Get('events/:id')
+  @ApiOperation({
+    summary: 'Get event by ID',
+    description: 'Retrieves a specific event by its UUID with all related data',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Event retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        externalId: { type: 'number' },
+        name: { type: 'string' },
+        showId: { type: 'number', nullable: true },
+        timeType: { type: 'number', nullable: true },
+        date: { type: 'string', format: 'date-time', nullable: true },
+        fixDate: { type: 'string', format: 'date-time', nullable: true },
+        endDate: { type: 'string', format: 'date-time', nullable: true },
+        timestamp: { type: 'string', nullable: true },
+        timezone: { type: 'string', nullable: true },
+        isPushkin: { type: 'boolean' },
+        locationId: { type: 'number', nullable: true },
+        locationName: { type: 'string', nullable: true },
+        serviceName: { type: 'string', nullable: true },
+        count: { type: 'number' },
+        minPrice: { type: 'number', nullable: true },
+        maxPrice: { type: 'number', nullable: true },
+        image: { type: 'string', nullable: true },
+        ageLimit: { type: 'number' },
+        desc: { type: 'string', nullable: true },
+        onlyPrivateSells: { type: 'boolean' },
+        isSeason: { type: 'boolean' },
+        isCovidFree: { type: 'boolean' },
+        isHideTime: { type: 'boolean' },
+        pipelineEventId: { type: 'number', nullable: true },
+        isAccessOnlyLink: { type: 'boolean' },
+        cityId: { type: 'number', nullable: true },
+        address: { type: 'string', nullable: true },
+        show: { type: 'object', nullable: true },
+        building: { type: 'object', nullable: true },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event not found',
+  })
+  async getEventById(@Param('id') id: string) {
+    return this.eventService.getEventById(id)
+  }
+
+  @Public()
   @Get('shows/shop/:shopId')
   @ApiOperation({
     summary: 'Get shows by shop ID',
@@ -158,6 +270,7 @@ export class EventController {
           id: { type: 'string', format: 'uuid' },
           externalId: { type: 'number' },
           name: { type: 'string' },
+          detailedUrl: { type: 'string', nullable: true },
           image: { type: 'string', nullable: true },
           desc: { type: 'string', nullable: true },
           partnerId: { type: 'number' },

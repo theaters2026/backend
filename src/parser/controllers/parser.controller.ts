@@ -11,19 +11,19 @@ export class ParserController {
   @Public()
   @Get('info')
   @ApiOperation({
-    summary: 'Получить информацию с афиши',
+    summary: 'Get information from poster',
     description:
-      'Запускает парсинг данных с афиши и выводит информацию в консоль. Можно передать URL для парсинга конкретной страницы или оставить пустым для парсинга по умолчанию',
+      'Starts parsing data from poster and outputs information to console. You can pass a URL to parse a specific page or leave empty for default parsing',
   })
   @ApiQuery({
     name: 'url',
     required: false,
-    description: 'URL для парсинга конкретной страницы',
+    description: 'URL for parsing a specific page',
     type: String,
   })
   @ApiResponse({
     status: 200,
-    description: 'Информация успешно получена и выведена в консоль',
+    description: 'Information successfully retrieved and output to console',
     schema: {
       type: 'object',
       properties: {
@@ -34,7 +34,7 @@ export class ParserController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Внутренняя ошибка сервера при парсинге',
+    description: 'Internal server error during parsing',
   })
   async getInfo(@Query('url') url?: string) {
     return this.parserService.getInfo(url)
