@@ -1,4 +1,3 @@
-
 import json
 import os
 from typing import List, Dict, Optional
@@ -46,21 +45,6 @@ class FileManager:
     @staticmethod
     def print_performances(performances: List[Dict[str, str]]):
         detail_url_count = sum(1 for perf in performances if perf.get('detail_url'))
-        print(f"\n=== Статистика ===")
-        print(f"Всего событий: {len(performances)}")
-        print(f"С detail_url: {detail_url_count}")
-        print(f"Без detail_url: {len(performances) - detail_url_count}")
-        print("=" * 50)
 
         for i, perf in enumerate(performances, 1):
-            print(f"\n{i}. {perf['title']}")
-            print(f"   Категория: {perf['category']}")
-            print(f"   Возрастной рейтинг: {perf['age_rating']}")
-            print(f"   Дата и время: {perf['datetime']}")
-            print(f"   Место: {perf['venue']}")
-            print(f"   Цена: {perf['price']}")
-            print(f"   Изображение: {perf['image_filename']}")
-            if perf.get('detail_url'):
-                print(f"   ✓ Детальная ссылка: {perf['detail_url']}")
-            else:
-                print(f"   ✗ Детальная ссылка: отсутствует")
+            pass
