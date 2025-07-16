@@ -8,28 +8,27 @@ datasource db {
 }
 
 model Show {
-  id            String        @id @default(uuid()) @db.Uuid
-  externalId    Int           @unique @map("external_id")
-  name          String
-  detailed_url   String?       @map("detailed_url")
-  image         String?
-  desc          String?       @db.Text
-  partnerId     Int?          @map("partner_id")
-  ageLimit      Int           @default(0) @map("age_limit")
-  shortInfo     String?       @db.Text @map("short_info")
-  fullInfo      String?       @db.Text @map("full_info")
-  publDate      String?       @map("publ_date")
-  premiereDate  String?       @map("premiere_date")
-  duration      String?       // Duration in minutes as string
-  minPrice      Decimal?      @db.Decimal(10, 2) @map("min_price")
-  maxPrice      Decimal?      @db.Decimal(10, 2) @map("max_price")
-  isPushkin     Boolean       @default(false) @map("is_pushkin")
-  shopId        String        @map("shop_id")
-  createdAt     DateTime      @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime      @updatedAt @db.Timestamp(6)
+  id           String   @id @default(uuid()) @db.Uuid
+  externalId   Int      @unique @map("external_id")
+  name         String
+  detailed_url String?  @map("detailed_url")
+  image        String?
+  desc         String?  @db.Text
+  partnerId    Int?     @map("partner_id")
+  ageLimit     Int      @default(0) @map("age_limit")
+  shortInfo    String?  @db.Text @map("short_info")
+  fullInfo     String?  @db.Text @map("full_info")
+  publDate     String?  @map("publ_date")
+  premiereDate String?  @map("premiere_date")
+  duration     String?
+  minPrice     Decimal? @db.Decimal(10, 2) @map("min_price")
+  maxPrice     Decimal? @db.Decimal(10, 2) @map("max_price")
+  isPushkin    Boolean  @default(false) @map("is_pushkin")
+  shopId       String   @map("shop_id")
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @updatedAt @db.Timestamp(6)
 
-  // Relations
-  events        Event[]
+  events         Event[]
   showCategories ShowCategory[]
 
   @@index([shopId])
@@ -37,42 +36,41 @@ model Show {
 }
 
 model Event {
-  id                    String            @id @default(uuid()) @db.Uuid
-  externalId            Int               @unique @map("external_id")
-  name                  String
-  showId                Int?              @map("show_id")
-  timeType              Int?              @map("time_type")
-  date                  DateTime?
-  fixDate               DateTime?         @map("fix_date")
-  endDate               DateTime?         @map("end_date")
-  timestamp             BigInt?
-  timezone              String?
-  isPushkin             Boolean           @default(false) @map("is_pushkin")
-  locationId            Int?              @map("location_id")
-  locationName          String?           @map("location_name")
-  serviceName           String?           @map("service_name")
-  count                 Int               @default(0)
-  minPrice              Decimal?          @db.Decimal(10, 2) @map("min_price")
-  maxPrice              Decimal?          @db.Decimal(10, 2) @map("max_price")
-  image                 String?
-  ageLimit              Int               @default(0) @map("age_limit")
-  desc                  String?
-  onlyPrivateSells      Boolean           @default(false) @map("only_private_sells")
-  isSeason              Boolean           @default(false) @map("is_season")
-  isCovidFree           Boolean           @default(false) @map("is_covid_free")
-  isHideTime            Boolean           @default(false) @map("is_hide_time")
-  pipelineEventId       Int?              @map("pipeline_event_id")
-  isAccessOnlyLink      Boolean           @default(false) @map("is_access_only_link")
-  cityId                Int?              @map("city_id")
-  address               String?
-  createdAt             DateTime          @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime          @updatedAt @db.Timestamp(6)
+  id               String    @id @default(uuid()) @db.Uuid
+  externalId       Int       @unique @map("external_id")
+  name             String
+  showId           Int?      @map("show_id")
+  timeType         Int?      @map("time_type")
+  date             DateTime?
+  fixDate          DateTime? @map("fix_date")
+  endDate          DateTime? @map("end_date")
+  timestamp        BigInt?
+  timezone         String?
+  isPushkin        Boolean   @default(false) @map("is_pushkin")
+  locationId       Int?      @map("location_id")
+  locationName     String?   @map("location_name")
+  serviceName      String?   @map("service_name")
+  count            Int       @default(0)
+  minPrice         Decimal?  @db.Decimal(10, 2) @map("min_price")
+  maxPrice         Decimal?  @db.Decimal(10, 2) @map("max_price")
+  image            String?
+  ageLimit         Int       @default(0) @map("age_limit")
+  desc             String?
+  onlyPrivateSells Boolean   @default(false) @map("only_private_sells")
+  isSeason         Boolean   @default(false) @map("is_season")
+  isCovidFree      Boolean   @default(false) @map("is_covid_free")
+  isHideTime       Boolean   @default(false) @map("is_hide_time")
+  pipelineEventId  Int?      @map("pipeline_event_id")
+  isAccessOnlyLink Boolean   @default(false) @map("is_access_only_link")
+  cityId           Int?      @map("city_id")
+  address          String?
+  createdAt        DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime  @updatedAt @db.Timestamp(6)
 
-  // Relations
-  show                  Show?             @relation(fields: [showUuid], references: [id])
-  showUuid              String?           @db.Uuid @map("show_uuid")
-  building              Building?         @relation(fields: [buildingId], references: [id])
-  buildingId            String?           @db.Uuid @map("building_id")
+  show       Show?     @relation(fields: [showUuid], references: [id])
+  showUuid   String?   @db.Uuid @map("show_uuid")
+  building   Building? @relation(fields: [buildingId], references: [id])
+  buildingId String?   @db.Uuid @map("building_id")
 
   @@index([showUuid])
   @@index([buildingId])
@@ -81,31 +79,29 @@ model Event {
 }
 
 model Building {
-  id        String    @id @default(uuid()) @db.Uuid
+  id         String   @id @default(uuid()) @db.Uuid
   externalId Int      @unique @map("external_id")
-  name      String
-  cityId    Int?      @map("city_id")
-  address   String
-  lat       String?
-  lon       String?
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt @db.Timestamp(6)
+  name       String
+  cityId     Int?     @map("city_id")
+  address    String
+  lat        String?
+  lon        String?
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @updatedAt @db.Timestamp(6)
 
-  // Relations
-  events    Event[]
+  events Event[]
 
   @@index([cityId])
   @@map("buildings")
 }
 
 model ShowCategory {
-  id        String    @id @default(uuid()) @db.Uuid
+  id        String   @id @default(uuid()) @db.Uuid
   name      String
-  showId    String    @db.Uuid @map("show_id")
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  showId    String   @db.Uuid @map("show_id")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
 
-  // Relations
-  show      Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+  show Show @relation(fields: [showId], references: [id], onDelete: Cascade)
 
   @@index([showId])
   @@map("show_categories")

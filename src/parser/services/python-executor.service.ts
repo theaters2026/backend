@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import * as path from 'path'
@@ -7,6 +7,8 @@ const execAsync = promisify(exec)
 
 @Injectable()
 export class PythonExecutorService {
+  private readonly logger = new Logger(PythonExecutorService.name)
+
   async executePythonParser(url?: string): Promise<void> {
     const mainScriptPath = path.join(process.cwd(), 'src', 'parser', 'python', 'main.py')
 
@@ -18,7 +20,7 @@ export class PythonExecutorService {
       ? `python3 "${mainScriptPath}" "${url}"`
       : `python3 "${mainScriptPath}"`
 
-    console.log(`Executing Python command: ${pythonCommand}`)
+    this.logger.log(`Executing Python command: ${pythonCommand}`)
 
     const { stderr, stdout } = await execAsync(pythonCommand, {
       cwd: process.cwd(),
@@ -26,11 +28,11 @@ export class PythonExecutorService {
     })
 
     if (stdout) {
-      console.log(`Python stdout: ${stdout}`)
+      this.logger.log(`Python stdout: ${stdout}`)
     }
 
     if (stderr) {
-      console.error(`Python stderr: ${stderr}`)
+      this.logger.error(`Python stderr: ${stderr}`)
     }
   }
 }

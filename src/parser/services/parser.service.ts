@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import * as path from 'path'
 import * as fs from 'fs'
 import { ParsedPerformance } from '../types/parsed-performance.interface'
@@ -7,6 +7,8 @@ import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
 export class ParserService {
+  private readonly logger = new Logger(ParserService.name)
+
   constructor(
     private pythonExecutorService: PythonExecutorService,
     private prisma: PrismaService,
@@ -14,14 +16,14 @@ export class ParserService {
 
   async getInfo(url?: string): Promise<{ message: string; count: number; updated: number }> {
     try {
-      console.log(`Starting info parsing with URL: ${url || 'default'}`)
+      this.logger.log(`Starting info parsing with URL: ${url || 'default'}`)
 
       await this.pythonExecutorService.executePythonParser(url)
 
       const outputPath = path.join(process.cwd(), 'performances.json')
 
       if (!fs.existsSync(outputPath)) {
-        console.log('No output file found, displaying Python output only')
+        this.logger.log('No output file found, displaying Python output only')
         return {
           message: 'Parsing completed. Check console for Python output.',
           count: 0,
@@ -32,31 +34,30 @@ export class ParserService {
       const fileContent = fs.readFileSync(outputPath, 'utf-8')
       const performances: ParsedPerformance[] = JSON.parse(fileContent)
 
-      console.log(`=== PARSED PERFORMANCES INFO ===`)
-      console.log(`Total performances found: ${performances.length}`)
-      console.log(`================================`)
+      this.logger.log(`=== PARSED PERFORMANCES INFO ===`)
+      this.logger.log(`Total performances found: ${performances.length}`)
+      this.logger.log(`================================`)
 
       let updatedCount = 0
 
       for (const [index, perf] of performances.entries()) {
-        console.log(`\n--- Performance ${index + 1} ---`)
-        console.log(`Title: ${perf.title}`)
-        console.log(`Category: ${perf.category}`)
-        console.log(`Age Rating: ${perf.age_rating}`)
-        console.log(`DateTime: ${perf.datetime}`)
-        console.log(`Venue: ${perf.venue}`)
-        console.log(`Price: ${perf.price}`)
-        console.log(`Image URL: ${perf.image_url}`)
-        console.log(`Detail URL: ${perf.detail_url || 'N/A'}`)
+        this.logger.log(`\n--- Performance ${index + 1} ---`)
+        this.logger.log(`Title: ${perf.title}`)
+        this.logger.log(`Category: ${perf.category}`)
+        this.logger.log(`Age Rating: ${perf.age_rating}`)
+        this.logger.log(`DateTime: ${perf.datetime}`)
+        this.logger.log(`Venue: ${perf.venue}`)
+        this.logger.log(`Price: ${perf.price}`)
+        this.logger.log(`Image URL: ${perf.image_url}`)
+        this.logger.log(`Detail URL: ${perf.detail_url || 'N/A'}`)
 
-        // Ищем совпадение по названию и обновляем detailed_url
         if (perf.title && perf.detail_url) {
           try {
             const matchingShow = await this.prisma.show.findFirst({
               where: {
                 name: {
                   equals: perf.title,
-                  mode: 'insensitive', // Case-insensitive поиск
+                  mode: 'insensitive',
                 },
               },
             })
@@ -68,25 +69,24 @@ export class ParserService {
               })
 
               updatedCount++
-              console.log(`✓ Updated detailed_url for show: "${perf.title}"`)
+              this.logger.log(`✓ Updated detailed_url for show: "${perf.title}"`)
             } else {
-              console.log(`✗ No matching show found for: "${perf.title}"`)
+              this.logger.log(`✗ No matching show found for: "${perf.title}"`)
             }
           } catch (error) {
-            console.error(`Error updating show "${perf.title}":`, error.message)
+            this.logger.error(`Error updating show "${perf.title}":`, error.message)
           }
         } else {
-          console.log(`⚠ Missing title or detail_url for performance ${index + 1}`)
+          this.logger.log(`⚠ Missing title or detail_url for performance ${index + 1}`)
         }
 
-        console.log(`------------------------`)
+        this.logger.log(`------------------------`)
       }
 
-      console.log(`\n=== PARSING COMPLETED ===`)
-      console.log(`Total performances processed: ${performances.length}`)
-      console.log(`Shows updated with detailed_url: ${updatedCount}`)
+      this.logger.log(`\n=== PARSING COMPLETED ===`)
+      this.logger.log(`Total performances processed: ${performances.length}`)
+      this.logger.log(`Shows updated with detailed_url: ${updatedCount}`)
 
-      // Очистка файла после обработки
       fs.unlinkSync(outputPath)
 
       return {
@@ -95,7 +95,7 @@ export class ParserService {
         updated: updatedCount,
       }
     } catch (error) {
-      console.error('Parsing error:', error)
+      this.logger.error('Parsing error:', error)
       return {
         message: `Parsing error: ${error.message}. Check console for details.`,
         count: 0,
