@@ -6,6 +6,5 @@ export interface ParsedPerformance {
   venue: string
   price: string
   image_url: string
-  image_filename: string
   detail_url?: string
 }

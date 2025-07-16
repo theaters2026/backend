@@ -1,12 +1,10 @@
-
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
-from image_downloader import ImageDownloader
 
 
 class HtmlParser:
-    def __init__(self, image_downloader: ImageDownloader):
-        self.image_downloader = image_downloader
+    def __init__(self):
+        pass
 
     def parse_performances(self, content: str, base_url: str = None) -> List[Dict[str, str]]:
         if not content:
@@ -84,9 +82,8 @@ class HtmlParser:
             image_url = image_elem.get('src') or image_elem.get('data-src')
             if image_url:
                 performance_data["image_url"] = image_url
-                filename = self.image_downloader.download_image(image_url, base_url)
-                if filename:
-                    performance_data["image_filename"] = filename
+                # Просто оставляем пустое имя файла, так как загрузка изображений отключена
+                performance_data["image_filename"] = ""
 
     def _extract_title(self, performance_div, performance_data: Dict, block_text: str):
         title_selectors = [

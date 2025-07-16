@@ -1,6 +1,6 @@
+
 from typing import List, Dict, Optional
 from web_driver_manager import WebDriverManager
-from image_downloader import ImageDownloader
 from html_parser import HtmlParser
 from file_manager import FileManager
 
@@ -8,8 +8,7 @@ from file_manager import FileManager
 class AfishaParser:
     def __init__(self):
         self.web_driver = WebDriverManager()
-        self.image_downloader = ImageDownloader()
-        self.html_parser = HtmlParser(self.image_downloader)
+        self.html_parser = HtmlParser()
         self.file_manager = FileManager()
 
     def parse_performances_from_url(self, url: str) -> List[Dict[str, str]]:
@@ -21,13 +20,9 @@ class AfishaParser:
 
             if events_with_details:
                 print(f"Found {len(events_with_details)} events with details via clicks")
-                # Обрабатываем изображения для событий с detail_url
+                # Для событий с detail_url просто устанавливаем пустое имя файла
                 for event in events_with_details:
-                    if event.get('image_url'):
-                        filename = self.image_downloader.download_image(event['image_url'], url)
-                        event['image_filename'] = filename or ""
-                    else:
-                        event['image_filename'] = ""
+                    event['image_filename'] = ""
                 return events_with_details
 
             print("No events found via clicks, trying HTML parsing")
