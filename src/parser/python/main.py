@@ -4,11 +4,9 @@ from afisha_parser import AfishaParser
 
 
 def validate_url(url):
-    """Проверяет корректность URL"""
     if not url:
         return False
 
-    # Проверяем, что URL начинается правильно и не содержит лишних частей
     url_pattern = r'^https?://[^\s/$.?#].[^\s]*$'
     return re.match(url_pattern, url) is not None
 
@@ -19,7 +17,6 @@ def main():
     if len(sys.argv) > 1:
         source = sys.argv[1].strip()
 
-        # Проверяем, что URL корректный
         if source.startswith("http://") or source.startswith("https://"):
             if not validate_url(source):
                 print(f"Error: Invalid URL format: {source}")

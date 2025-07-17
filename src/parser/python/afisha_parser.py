@@ -12,16 +12,13 @@ class AfishaParser:
 
     def parse_performances_from_url(self, url: str) -> List[Dict[str, str]]:
         try:
-            # Сначала пытаемся получить события с detail_url через клики
             events_with_details = self.web_driver.get_events_with_details(url)
 
             if events_with_details:
-                # Фильтруем только события с detail_url
                 events_with_urls = [event for event in events_with_details if event.get('detail_url')]
                 if events_with_urls:
                     return events_with_urls
 
-            # Если не получилось через клики, используем обычный парсинг HTML
             html_content = self.web_driver.get_page_content(url)
             if html_content:
                 return self.html_parser.parse_performances(html_content, url)

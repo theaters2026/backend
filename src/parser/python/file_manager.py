@@ -14,9 +14,7 @@ class FileManager:
 
     @staticmethod
     def save_to_json(data: List[Dict[str, str]], filename: str = "performances.json"):
-        """Сохраняет данные в JSON файл, добавляя /https к detail_url если нужно"""
         try:
-            # Проверяем и добавляем /https к detail_url перед сохранением
             for performance in data:
                 if performance.get('detail_url'):
                     performance['detail_url'] = FileManager._add_https_suffix(performance['detail_url'])
@@ -28,14 +26,11 @@ class FileManager:
 
     @staticmethod
     def _add_https_suffix(url: str) -> str:
-        """Добавляет /https в конец URL если его там нет"""
         if not url:
             return url
 
-        # Убираем trailing slash если есть
         url = url.rstrip('/')
 
-        # Проверяем, не заканчивается ли уже на /https
         if not url.endswith('/https'):
             # Добавляем /https
             return f"{url}/https"

@@ -86,21 +86,16 @@ class HtmlParser:
                 performance_data["title"] = lines[0].strip()
 
     def _extract_detail_url(self, performance_div, performance_data: Dict):
-        """Извлекает detail_url из статического HTML"""
-        # Ищем ссылки внутри блока
         links = performance_div.find_all("a")
         for link in links:
             href = link.get('href')
             if href and ('performance' in href or 'event' in href):
-                # Добавляем /https в конец URL
                 performance_data['detail_url'] = self._add_https_suffix(href)
                 return
 
-        # Ищем data-атрибуты
         for attr in ['data-href', 'data-url', 'data-link', 'data-event-url']:
             attr_value = performance_div.get(attr)
             if attr_value:
-                # Добавляем /https в конец URL
                 performance_data['detail_url'] = self._add_https_suffix(attr_value)
                 return
 
@@ -109,8 +104,5 @@ class HtmlParser:
         if not url:
             return url
 
-        # Убираем trailing slash если есть
         url = url.rstrip('/')
-
-        # Добавляем /https
         return f"{url}/https"

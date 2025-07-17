@@ -5,11 +5,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class WebDriverUtils:
-    """Утилиты для работы с WebDriver"""
 
     @staticmethod
     def wait_for_content(driver):
-        """Ждет загрузки контента"""
         selectors_to_try = [
             "div._3XrzE._5fgzK",
             "._3ErvA",
@@ -34,7 +32,6 @@ class WebDriverUtils:
 
     @staticmethod
     def scroll_page(driver):
-        """Скролит страницу"""
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
         driver.execute_script("window.scrollTo(0, 0);")
