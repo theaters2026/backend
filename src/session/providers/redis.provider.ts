@@ -27,40 +27,41 @@ redis.on('monitor', (time, args) => {
 })
 
 export const customRedisStore = {
-  get(sid: string, callback: (err?: any, session?: any) => void) {
-    redis.get(`session:${sid}`, (err, data) => {
-      if (err) {
-        logger.error('Error getting session from Redis:', err)
-        return callback(err)
-      }
+  async get(sid: string, callback: (err?: any, session?: any) => void) {
+    try {
+      const data = await redis.get(`session:${sid}`)
       if (!data) return callback()
-      try {
-        const session = JSON.parse(data)
-        callback(null, session)
-      } catch (error) {
-        logger.error('Error parsing session data:', error)
-        callback(error)
-      }
-    })
+
+      const session = JSON.parse(data)
+      callback(null, session)
+    } catch (error) {
+      logger.error('Error getting session from Redis:', error)
+      callback(error)
+    }
   },
-  set(sid: string, session: any, callback: (err?: any) => void) {
-    const ttl =
-      session.cookie && session.cookie.maxAge
-        ? Math.floor(session.cookie.maxAge / 1000)
-        : 24 * 60 * 60
-    redis.set(`session:${sid}`, JSON.stringify(session), 'EX', ttl, (err) => {
-      if (err) {
-        logger.error('Error setting session in Redis:', err)
-      }
-      callback(err)
-    })
+
+  async set(sid: string, session: any, callback: (err?: any) => void) {
+    try {
+      const ttl =
+        session.cookie && session.cookie.maxAge
+          ? Math.floor(session.cookie.maxAge / 1000)
+          : 24 * 60 * 60
+
+      await redis.set(`session:${sid}`, JSON.stringify(session), 'EX', ttl)
+      callback()
+    } catch (error) {
+      logger.error('Error setting session in Redis:', error)
+      callback(error)
+    }
   },
-  destroy(sid: string, callback: (err?: any) => void) {
-    redis.del(`session:${sid}`, (err) => {
-      if (err) {
-        logger.error('Error destroying session in Redis:', err)
-      }
-      callback(err)
-    })
+
+  async destroy(sid: string, callback: (err?: any) => void) {
+    try {
+      await redis.del(`session:${sid}`)
+      callback()
+    } catch (error) {
+      logger.error('Error destroying session in Redis:', error)
+      callback(error)
+    }
   },
 }
