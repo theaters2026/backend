@@ -1,15 +1,15 @@
 import time
-from typing import Optional, List, Dict
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from typing import Optional, List, Dict
 from urllib.parse import urlparse
 
 from chrome_config import ChromeConfig
-from url_utils import UrlUtils
-from link_finder import LinkFinder
 from event_parser import EventParser
+from link_finder import LinkFinder
+from url_utils import UrlUtils
 from webdriver_utils import WebDriverUtils
 
 
@@ -49,7 +49,7 @@ class WebDriverManager:
                     pass
 
     def get_events_with_details(self, url: str) -> List[Dict[str, str]]:
-        """Получает события с детальными ссылками"""
+        """Получает события с детальными ссылками через клики"""
         driver = None
         try:
             driver = self._create_driver()
@@ -60,17 +60,36 @@ class WebDriverManager:
             time.sleep(8)
             self.webdriver_utils.scroll_page(driver)
 
-            # Получаем базовый URL для построения полных ссылок
-            base_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
+            # Находим все блоки событий
+            event_blocks = driver.find_elements(By.CSS_SELECTOR, "div._3XrzE._5fgzK")
 
-            # Комбинированный подход: сначала извлекаем данные, затем ищем ссылки
-            events_data = self._extract_events_comprehensive(driver, base_url)
-            print(f"Found {len(events_data)} events with comprehensive search")
+            if not event_blocks:
+                return []
 
-            # Дополнительно пытаемся найти ссылки через клики
-            self._enhance_with_click_urls(driver, events_data, url)
+            events_data = []
+            successful_clicks = 0
 
-            return events_data
+            for i, block in enumerate(event_blocks):
+                # Извлекаем базовые данные
+                event_data = self.event_parser.extract_event_data_from_block(block)
+
+                # Пытаемся получить URL через клик
+                detail_url = self._try_click_for_url(driver, i, url)
+
+                if detail_url:
+                    # Добавляем /https в конец URL
+                    detail_url = self.url_utils.add_https_suffix(detail_url)
+                    event_data['detail_url'] = detail_url
+                    successful_clicks += 1
+
+                events_data.append(event_data)
+
+            # Выводим результат только если есть успешные клики
+            if successful_clicks > 0:
+                print(f"Successfully found {successful_clicks} detail URLs via clicks")
+                return events_data
+            else:
+                return []
 
         except Exception as e:
             print(f"Error in get_events_with_details: {e}")
@@ -89,58 +108,6 @@ class WebDriverManager:
             return webdriver.Chrome(service=service, options=self.chrome_options)
         else:
             return webdriver.Chrome(options=self.chrome_options)
-
-    def _extract_events_comprehensive(self, driver, base_url: str) -> List[Dict[str, str]]:
-        """Комплексное извлечение событий с поиском ссылок"""
-        events_data = []
-
-        try:
-            # Находим все блоки событий
-            event_blocks = driver.find_elements(By.CSS_SELECTOR, "div._3XrzE._5fgzK")
-            print(f"Found {len(event_blocks)} event blocks")
-
-            for i, block in enumerate(event_blocks):
-                print(f"Processing block {i + 1}")
-
-                # Извлекаем базовые данные
-                event_data = self.event_parser.extract_event_data_from_block(block)
-
-                # Ищем detail_url различными способами
-                detail_url = self.link_finder.find_detail_url_comprehensive(driver, block, base_url)
-
-                if detail_url:
-                    # Добавляем /https в конец URL
-                    detail_url = self.url_utils.add_https_suffix(detail_url)
-                    event_data['detail_url'] = detail_url
-                    print(f"  ✓ Found detail_url: {detail_url}")
-                else:
-                    print(f"  ✗ No detail_url found")
-
-                events_data.append(event_data)
-
-        except Exception as e:
-            print(f"Error in _extract_events_comprehensive: {e}")
-
-        return events_data
-
-    def _enhance_with_click_urls(self, driver, events_data: List[Dict[str, str]], original_url: str):
-        """Дополнительно пытается найти ссылки через клики"""
-        print("Enhancing with click URLs...")
-
-        for i, event_data in enumerate(events_data):
-            if event_data.get('detail_url'):
-                continue  # Уже есть URL
-
-            try:
-                # Попытка получить URL через клик
-                detail_url = self._try_click_for_url(driver, i, original_url)
-                if detail_url:
-                    # Добавляем /https в конец URL
-                    detail_url = self.url_utils.add_https_suffix(detail_url)
-                    event_data['detail_url'] = detail_url
-                    print(f"  ✓ Got URL via click for event {i}: {detail_url}")
-            except Exception as e:
-                print(f"  ✗ Click failed for event {i}: {e}")
 
     def _try_click_for_url(self, driver, block_index: int, original_url: str) -> Optional[str]:
         """Пытается получить URL через клик"""
@@ -172,13 +139,12 @@ class WebDriverManager:
                     if new_url != current_url:
                         return self.url_utils.clean_url(new_url)
 
-                except Exception as click_error:
-                    print(f"Click error: {click_error}")
+                except Exception:
+                    pass
 
             return None
 
-        except Exception as e:
-            print(f"Error in _try_click_for_url: {e}")
+        except Exception:
             return None
         finally:
             # Закрываем вкладку и возвращаемся

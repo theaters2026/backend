@@ -43,12 +43,6 @@ export class ParserService {
       for (const [index, perf] of performances.entries()) {
         this.logger.log(`\n--- Performance ${index + 1} ---`)
         this.logger.log(`Title: ${perf.title}`)
-        this.logger.log(`Category: ${perf.category}`)
-        this.logger.log(`Age Rating: ${perf.age_rating}`)
-        this.logger.log(`DateTime: ${perf.datetime}`)
-        this.logger.log(`Venue: ${perf.venue}`)
-        this.logger.log(`Price: ${perf.price}`)
-        this.logger.log(`Image URL: ${perf.image_url}`)
         this.logger.log(`Detail URL: ${perf.detail_url || 'N/A'}`)
 
         if (perf.title && perf.detail_url) {

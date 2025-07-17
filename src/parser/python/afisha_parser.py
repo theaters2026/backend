@@ -1,4 +1,3 @@
-
 from typing import List, Dict, Optional
 from web_driver_manager import WebDriverManager
 from html_parser import HtmlParser
@@ -13,25 +12,20 @@ class AfishaParser:
 
     def parse_performances_from_url(self, url: str) -> List[Dict[str, str]]:
         try:
-            print(f"Attempting to parse URL: {url}")
-
             # Сначала пытаемся получить события с detail_url через клики
             events_with_details = self.web_driver.get_events_with_details(url)
 
             if events_with_details:
-                print(f"Found {len(events_with_details)} events with details via clicks")
-                # Для событий с detail_url просто устанавливаем пустое имя файла
-                for event in events_with_details:
-                    event['image_filename'] = ""
-                return events_with_details
+                # Фильтруем только события с detail_url
+                events_with_urls = [event for event in events_with_details if event.get('detail_url')]
+                if events_with_urls:
+                    return events_with_urls
 
-            print("No events found via clicks, trying HTML parsing")
             # Если не получилось через клики, используем обычный парсинг HTML
             html_content = self.web_driver.get_page_content(url)
             if html_content:
                 return self.html_parser.parse_performances(html_content, url)
             else:
-                print("Failed to get HTML content")
                 return []
 
         except Exception as e:
@@ -44,7 +38,6 @@ class AfishaParser:
             if html_content:
                 return self.html_parser.parse_performances(html_content)
             else:
-                print(f"Failed to read file: {filepath}")
                 return []
         except Exception as e:
             print(f"Error parsing file {filepath}: {e}")
@@ -53,7 +46,6 @@ class AfishaParser:
     def save_to_json(self, performances: List[Dict[str, str]], filename: str = "performances.json"):
         try:
             self.file_manager.save_to_json(performances, filename)
-            print(f"Successfully saved {len(performances)} performances to {filename}")
         except Exception as e:
             print(f"Error saving to JSON: {e}")
 

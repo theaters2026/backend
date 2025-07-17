@@ -17,7 +17,7 @@ class HtmlParser:
 
         for block in performance_blocks:
             performance_data = self._parse_performance_info(block, base_url)
-            if performance_data and (performance_data.get("title") or performance_data.get("name")):
+            if performance_data and performance_data.get("title"):
                 performances.append(performance_data)
 
         return performances
@@ -51,39 +51,19 @@ class HtmlParser:
     def _parse_performance_info(self, performance_div, base_url: str = None) -> Dict[str, str]:
         performance_data = {
             "title": "",
-            "category": "",
-            "age_rating": "",
-            "datetime": "",
-            "venue": "",
-            "price": "",
-            "image_url": "",
-            "image_filename": "",
             "detail_url": "",
         }
 
         try:
             block_text = performance_div.get_text(strip=True)
 
-            self._process_image_info(performance_div, performance_data, base_url)
             self._extract_title(performance_div, performance_data, block_text)
-            self._extract_category_and_age(performance_div, performance_data)
-            self._extract_datetime_and_venue(performance_div, performance_data)
-            self._extract_price(performance_div, performance_data)
             self._extract_detail_url(performance_div, performance_data)
 
         except Exception:
             pass
 
         return performance_data
-
-    def _process_image_info(self, performance_div, performance_data: Dict, base_url: str):
-        image_elem = performance_div.find("img")
-        if image_elem:
-            image_url = image_elem.get('src') or image_elem.get('data-src')
-            if image_url:
-                performance_data["image_url"] = image_url
-                # Просто оставляем пустое имя файла, так как загрузка изображений отключена
-                performance_data["image_filename"] = ""
 
     def _extract_title(self, performance_div, performance_data: Dict, block_text: str):
         title_selectors = [
@@ -104,65 +84,6 @@ class HtmlParser:
             lines = block_text.split('\n')
             if lines:
                 performance_data["title"] = lines[0].strip()
-
-    def _extract_category_and_age(self, performance_div, performance_data: Dict):
-        category_selectors = [
-            "div._2nsaF",
-            "[class*='category']",
-            "[class*='genre']",
-            "[class*='type']"
-        ]
-
-        for selector in category_selectors:
-            category_elem = performance_div.select_one(selector)
-            if category_elem:
-                category_text = category_elem.get_text(strip=True)
-                parts = category_text.split(" · ")
-                if len(parts) >= 1:
-                    performance_data["category"] = parts[0]
-                if len(parts) >= 2:
-                    performance_data["age_rating"] = parts[1]
-                return
-
-    def _extract_datetime_and_venue(self, performance_div, performance_data: Dict):
-        datetime_selectors = [
-            "div._1E60K",
-            "[class*='date']",
-            "[class*='time']",
-            "[class*='when']"
-        ]
-
-        for selector in datetime_selectors:
-            datetime_elem = performance_div.select_one(selector)
-            if datetime_elem:
-                datetime_text = datetime_elem.get_text(strip=True)
-                parts = datetime_text.split(" · ")
-                if len(parts) >= 1:
-                    performance_data["datetime"] = parts[0].strip()
-                if len(parts) >= 2:
-                    performance_data["venue"] = parts[1].strip()
-                return
-
-        if not performance_data["datetime"]:
-            all_text = performance_div.get_text(strip=True)
-            import re
-            date_pattern = r'(\d{1,2}\s+(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря),?\s*\d{1,2}:\d{2})'
-            date_match = re.search(date_pattern, all_text)
-            if date_match:
-                performance_data["datetime"] = date_match.group(1)
-
-    def _extract_price(self, performance_div, performance_data: Dict):
-        price_selectors = [
-            "span._1QJzJ",
-            "[class*='price']",
-            "[class*='cost']"
-        ]
-
-        for selector in price_selectors:
-            price_elem = performance_div.select_one(selector)
-            if price_elem:
-                performance_data["price"] = price_elem.get_text(strip=True)
-                return
 
     def _extract_detail_url(self, performance_div, performance_data: Dict):
         """Извлекает detail_url из статического HTML"""

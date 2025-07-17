@@ -46,5 +46,7 @@ class FileManager:
     def print_performances(performances: List[Dict[str, str]]):
         detail_url_count = sum(1 for perf in performances if perf.get('detail_url'))
 
-        for i, perf in enumerate(performances, 1):
-            pass
+        if detail_url_count > 0:
+            print(f"Found {len(performances)} performances, {detail_url_count} with detail URLs")
+        else:
+            print(f"Found {len(performances)} performances, no detail URLs found")
