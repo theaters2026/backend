@@ -26,6 +26,7 @@ export class DataProcessorService {
           minPrice: apiShow.min_price ? parseFloat(apiShow.min_price) : null,
           maxPrice: apiShow.max_price ? parseFloat(apiShow.max_price) : null,
           isPushkin: apiShow.is_pushkin,
+          type_num: apiShow.type_num || null,
           shopId: shopId,
           updatedAt: new Date(),
         },
@@ -44,6 +45,7 @@ export class DataProcessorService {
           minPrice: apiShow.min_price ? parseFloat(apiShow.min_price) : null,
           maxPrice: apiShow.max_price ? parseFloat(apiShow.max_price) : null,
           isPushkin: apiShow.is_pushkin,
+          type_num: apiShow.type_num || null,
           shopId: shopId,
         },
       })

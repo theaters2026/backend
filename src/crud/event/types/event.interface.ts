@@ -17,6 +17,7 @@ export interface ApiShow {
   min_price?: string
   max_price?: string
   is_pushkin: boolean
+  type_num?: string
   events: ApiEvent[]
   show_categories: ApiShowCategory[]
 }
