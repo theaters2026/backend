@@ -3,8 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from typing import Optional, List, Dict
-from urllib.parse import urlparse
 
 from chrome_config import ChromeConfig
 from event_parser import EventParser
@@ -28,16 +29,13 @@ class WebDriverManager:
         try:
             driver = self._create_driver()
             driver.get(url)
-            time.sleep(5)
 
-            self.webdriver_utils.wait_for_content(driver)
-            time.sleep(8)
-            self.webdriver_utils.scroll_page(driver)
+            self._wait_and_scroll(driver)
 
-            html_content = driver.page_source
-            return html_content
+            return driver.page_source
 
-        except Exception:
+        except Exception as e:
+            print(f"Error in get_page_content: {e}")
             return None
         finally:
             if driver:
@@ -51,15 +49,20 @@ class WebDriverManager:
         try:
             driver = self._create_driver()
             driver.get(url)
-            time.sleep(5)
 
-            self.webdriver_utils.wait_for_content(driver)
-            time.sleep(8)
-            self.webdriver_utils.scroll_page(driver)
+            self._wait_and_scroll(driver)
 
-            event_blocks = driver.find_elements(By.CSS_SELECTOR, "div._3XrzE._5fgzK")
+            event_blocks = []
+            for attempt in range(3):
+                event_blocks = driver.find_elements(By.CSS_SELECTOR, "div._3XrzE._5fgzK")
+                if event_blocks:
+                    break
+                print(f"Attempt {attempt+1}: no event blocks found, waiting and scrolling again...")
+                time.sleep(3)
+                self.webdriver_utils.scroll_page(driver)
 
             if not event_blocks:
+                print("No event blocks found after retries.")
                 return []
 
             events_data = []
@@ -79,9 +82,8 @@ class WebDriverManager:
 
             if successful_clicks > 0:
                 print(f"Successfully found {successful_clicks} detail URLs via clicks")
-                return events_data
-            else:
-                return []
+
+            return events_data
 
         except Exception as e:
             print(f"Error in get_events_with_details: {e}")
@@ -119,18 +121,20 @@ class WebDriverManager:
                     driver.execute_script("arguments[0].scrollIntoView(true);", block)
                     time.sleep(1)
                     ActionChains(driver).move_to_element(block).click().perform()
-                    time.sleep(5)
+                    WebDriverWait(driver, 10).until(EC.url_changes(current_url))
+                    time.sleep(2)
 
                     new_url = driver.current_url
                     if new_url != current_url:
                         return self.url_utils.clean_url(new_url)
 
-                except Exception:
-                    pass
+                except Exception as click_err:
+                    print(f"Click failed on block {block_index}: {click_err}")
 
             return None
 
-        except Exception:
+        except Exception as tab_err:
+            print(f"Error in _try_click_for_url: {tab_err}")
             return None
         finally:
             try:
@@ -138,3 +142,12 @@ class WebDriverManager:
                 driver.switch_to.window(driver.window_handles[0])
             except:
                 pass
+
+    def _wait_and_scroll(self, driver):
+        try:
+            self.webdriver_utils.wait_for_content(driver)
+            for i in range(3):
+                self.webdriver_utils.scroll_page(driver)
+                time.sleep(3)
+        except Exception as e:
+            print(f"Error during wait and scroll: {e}")
