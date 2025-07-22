@@ -1,5 +1,5 @@
 import { Controller, Post, Req, UseInterceptors } from '@nestjs/common'
-import { MediaService } from '../service/media.service'
+import { MediaService } from '../service'
 import { FastifyRequest } from 'fastify'
 import { UploadFileInterceptor } from '../interceptors/upload-file.interceptor'
 

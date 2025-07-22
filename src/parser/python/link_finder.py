@@ -1,6 +1,7 @@
 import re
-from selenium.webdriver.common.by import By
 from typing import Optional
+
+from selenium.webdriver.common.by import By
 
 from url_utils import UrlUtils
 

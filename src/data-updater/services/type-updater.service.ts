@@ -53,30 +53,6 @@ export class TypeUpdaterService {
     }
   }
 
-  private extractTypeFromUrl(url: string): string | null {
-    if (!url) return null
-
-    try {
-      const match = url.match(/\/creations\/([^\/]+)\//)
-
-      if (!match) return null
-
-      const type = match[1].toLowerCase()
-
-      switch (type) {
-        case 'performance':
-          return '9'
-        case 'concert':
-          return '4'
-        default:
-          return null
-      }
-    } catch (error) {
-      this.logger.error(`Error extracting type from URL ${url}:`, error)
-      return null
-    }
-  }
-
   async updateSingleShow(showId: string): Promise<boolean> {
     try {
       const show = await this.prisma.show.findUnique({
@@ -140,5 +116,29 @@ export class TypeUpdaterService {
       type_num: stat.type_num || 'null',
       count: stat._count.id,
     }))
+  }
+
+  private extractTypeFromUrl(url: string): string | null {
+    if (!url) return null
+
+    try {
+      const match = url.match(/\/creations\/([^\/]+)\//)
+
+      if (!match) return null
+
+      const type = match[1].toLowerCase()
+
+      switch (type) {
+        case 'performance':
+          return '9'
+        case 'concert':
+          return '4'
+        default:
+          return null
+      }
+    } catch (error) {
+      this.logger.error(`Error extracting type from URL ${url}:`, error)
+      return null
+    }
   }
 }

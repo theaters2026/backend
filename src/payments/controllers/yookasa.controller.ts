@@ -11,17 +11,12 @@ import {
 } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe'
-import { YookassaService } from '../services/yookassa.service'
-import { PaymentsService } from '../services/payments.service'
-import { WebhookService } from '../services/webhook.service'
-import { CreatePaymentDto } from '../dto/create-payment.dto'
-import { CapturePaymentDto } from '../dto/capture-payment.dto'
-import { GetPaymentDto } from '../dto/get-payment.dto'
-import { WebhookDto } from '../dto/webhook.dto'
-import { ApiResponse as IApiResponse } from '../interfaces/payment.interfaces'
-import { PaymentStatus } from '../enums/payment-status.enum'
+import { PaymentsService, WebhookService, YookassaService } from '../services'
+import { CapturePaymentDto, CreatePaymentDto, GetPaymentDto, WebhookDto } from '../dto'
+import { ApiResponse as IApiResponse } from '../interfaces'
+import { PaymentStatus } from '../enums'
 import { Public } from 'src/common/decorators'
-import { PaymentExceptionFilter } from '../filters/payment-exception.filter'
+import { PaymentExceptionFilter } from '../filters'
 
 @ApiTags('Payments')
 @Controller('payments')

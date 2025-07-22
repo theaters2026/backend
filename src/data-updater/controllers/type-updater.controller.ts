@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Param } from '@nestjs/common'
-import { TypeUpdaterService } from '../services/type-updater.service'
+import { Controller, Get, Param, Post } from '@nestjs/common'
+import { TypeUpdaterService } from '../services'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 

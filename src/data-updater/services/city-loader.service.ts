@@ -12,22 +12,6 @@ export class CityListLoaderService {
     this.loadCitiesList()
   }
 
-  private loadCitiesList(): void {
-    try {
-      const filePath = path.join(process.cwd(), 'src', 'data-updater', 'services', 'city.list.json')
-
-      if (fs.existsSync(filePath)) {
-        const fileContent = fs.readFileSync(filePath, 'utf-8')
-        this.citiesList = JSON.parse(fileContent)
-        this.logger.log(`Loaded ${this.citiesList.length} cities from city.list.json`)
-      } else {
-        this.logger.warn('city.list.json file not found')
-      }
-    } catch (error) {
-      this.logger.error(`Error loading city.list.json: ${error.message}`)
-    }
-  }
-
   getCitiesList(): CityFromList[] {
     return this.citiesList
   }
@@ -75,5 +59,21 @@ export class CityListLoaderService {
     }
 
     return null
+  }
+
+  private loadCitiesList(): void {
+    try {
+      const filePath = path.join(process.cwd(), 'src', 'data-updater', 'services', 'city.list.json')
+
+      if (fs.existsSync(filePath)) {
+        const fileContent = fs.readFileSync(filePath, 'utf-8')
+        this.citiesList = JSON.parse(fileContent)
+        this.logger.log(`Loaded ${this.citiesList.length} cities from city.list.json`)
+      } else {
+        this.logger.warn('city.list.json file not found')
+      }
+    } catch (error) {
+      this.logger.error(`Error loading city.list.json: ${error.message}`)
+    }
   }
 }

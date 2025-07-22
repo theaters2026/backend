@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { WebhookDto } from '../dto/webhook.dto'
+import { WebhookDto } from '../dto'
 import { PaymentsService } from './payments.service'
 import { PaymentStatus, WebhookEvent } from '../enums'
 import {
   UnknownWebhookEventException,
   WebhookProcessingException,
   WebhookValidationException,
-} from '../exceptions/webhook.exceptions'
+} from '../exceptions'
 import * as crypto from 'crypto'
 
 @Injectable()
@@ -48,36 +48,6 @@ export class WebhookService {
     }
   }
 
-  private async handleWebhookEvent(dto: WebhookDto): Promise<void> {
-    const { event, object } = dto
-
-    switch (event) {
-      case WebhookEvent.PAYMENT_SUCCEEDED:
-        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.SUCCEEDED)
-        this.logger.log(`Payment succeeded: ${object.id}`)
-        break
-
-      case WebhookEvent.PAYMENT_CANCELED:
-        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.CANCELLED)
-        this.logger.log(`Payment cancelled: ${object.id}`)
-        break
-
-      case WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE:
-        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.WAITING_FOR_CAPTURE)
-        this.logger.log(`Payment waiting for capture: ${object.id}`)
-        break
-
-      case WebhookEvent.PAYMENT_PENDING:
-        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.PENDING)
-        this.logger.log(`Payment pending: ${object.id}`)
-        break
-
-      default:
-        this.logger.warn(`Unknown webhook event: ${event}`)
-        throw new UnknownWebhookEventException(`Unknown webhook event: ${event}`)
-    }
-  }
-
   async validateWebhookSignature(dto: WebhookDto, signature: string): Promise<boolean> {
     if (!signature) {
       this.logger.warn('No signature provided for webhook validation')
@@ -106,6 +76,36 @@ export class WebhookService {
     } catch (error) {
       this.logger.error('Error validating webhook signature:', error.message)
       return false
+    }
+  }
+
+  private async handleWebhookEvent(dto: WebhookDto): Promise<void> {
+    const { event, object } = dto
+
+    switch (event) {
+      case WebhookEvent.PAYMENT_SUCCEEDED:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.SUCCEEDED)
+        this.logger.log(`Payment succeeded: ${object.id}`)
+        break
+
+      case WebhookEvent.PAYMENT_CANCELED:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.CANCELLED)
+        this.logger.log(`Payment cancelled: ${object.id}`)
+        break
+
+      case WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.WAITING_FOR_CAPTURE)
+        this.logger.log(`Payment waiting for capture: ${object.id}`)
+        break
+
+      case WebhookEvent.PAYMENT_PENDING:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.PENDING)
+        this.logger.log(`Payment pending: ${object.id}`)
+        break
+
+      default:
+        this.logger.warn(`Unknown webhook event: ${event}`)
+        throw new UnknownWebhookEventException(`Unknown webhook event: ${event}`)
     }
   }
 }

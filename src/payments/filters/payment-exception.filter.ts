@@ -1,17 +1,15 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common'
-import { Response } from 'express'
+import { FastifyReply, FastifyRequest } from 'fastify'
 import {
   PaymentCancellationException,
   PaymentCaptureException,
   PaymentCreationException,
   PaymentNotFoundException,
-  YookassaApiException,
-} from '../exceptions/payment.exceptions'
-import {
   UnknownWebhookEventException,
   WebhookProcessingException,
   WebhookValidationException,
-} from '../exceptions/webhook.exceptions'
+  YookassaApiException,
+} from '../exceptions'
 
 @Catch(
   PaymentNotFoundException,
@@ -28,8 +26,8 @@ export class PaymentExceptionFilter implements ExceptionFilter {
 
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
-    const request = ctx.getRequest()
+    const response = ctx.getResponse<FastifyReply>()
+    const request = ctx.getRequest<FastifyRequest>()
 
     let status: HttpStatus
     let message: string
@@ -79,6 +77,6 @@ export class PaymentExceptionFilter implements ExceptionFilter {
       path: request.url,
     }
 
-    response.status(status).json(errorResponse)
+    response.status(status).send(errorResponse)
   }
 }

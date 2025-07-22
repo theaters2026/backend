@@ -3,7 +3,6 @@ from urllib.parse import urljoin
 
 
 class UrlUtils:
-    """Утилиты для работы с URL"""
 
     @staticmethod
     def clean_url(url: str) -> str:
