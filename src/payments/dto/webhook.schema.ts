@@ -1,13 +1,16 @@
 import { z } from 'zod'
+import { PaymentStatus } from '../enums/payment-status.enum'
+import { WebhookEvent } from '../enums/webhook-event.enum'
+import { Currency } from '../enums/currency.enum'
 
 export const WebhookSchema = z.object({
-  event: z.string().min(1, 'Event type is required'),
+  event: z.nativeEnum(WebhookEvent, { message: 'Invalid webhook event type' }),
   object: z.object({
     id: z.string().min(1, 'Payment ID is required'),
-    status: z.string().min(1, 'Status is required'),
+    status: z.nativeEnum(PaymentStatus, { message: 'Invalid payment status' }),
     amount: z.object({
       value: z.string(),
-      currency: z.string(),
+      currency: z.nativeEnum(Currency, { message: 'Invalid currency' }),
     }),
     created_at: z.string(),
     description: z.string().optional(),

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { WebhookDto } from '../dto/webhook.dto'
 import { PaymentsService } from './payments.service'
+import { PaymentStatus, WebhookEvent } from '../enums'
 import {
   UnknownWebhookEventException,
   WebhookProcessingException,
@@ -51,23 +52,23 @@ export class WebhookService {
     const { event, object } = dto
 
     switch (event) {
-      case 'payment.succeeded':
-        await this.paymentsService.updatePaymentStatus(object.id, 'succeeded')
+      case WebhookEvent.PAYMENT_SUCCEEDED:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.SUCCEEDED)
         this.logger.log(`Payment succeeded: ${object.id}`)
         break
 
-      case 'payment.canceled':
-        await this.paymentsService.updatePaymentStatus(object.id, 'cancelled')
+      case WebhookEvent.PAYMENT_CANCELED:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.CANCELLED)
         this.logger.log(`Payment cancelled: ${object.id}`)
         break
 
-      case 'payment.waiting_for_capture':
-        await this.paymentsService.updatePaymentStatus(object.id, 'waiting_for_capture')
+      case WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.WAITING_FOR_CAPTURE)
         this.logger.log(`Payment waiting for capture: ${object.id}`)
         break
 
-      case 'payment.pending':
-        await this.paymentsService.updatePaymentStatus(object.id, 'pending')
+      case WebhookEvent.PAYMENT_PENDING:
+        await this.paymentsService.updatePaymentStatus(object.id, PaymentStatus.PENDING)
         this.logger.log(`Payment pending: ${object.id}`)
         break
 
