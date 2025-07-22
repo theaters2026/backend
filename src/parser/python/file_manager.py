@@ -1,6 +1,6 @@
 import json
 from typing import List, Dict, Optional
-from url_utils import UrlUtils  # Импорт утилиты
+from url_utils import UrlUtils
 
 class FileManager:
     @staticmethod

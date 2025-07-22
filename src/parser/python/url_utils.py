@@ -1,6 +1,5 @@
 import re
-from typing import Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 
 class UrlUtils:
@@ -53,3 +52,11 @@ class UrlUtils:
         url = url.rstrip('/')
 
         return f"{url}/https"
+
+    @staticmethod
+    def is_valid_url(url: str) -> bool:
+        if not url:
+            return False
+
+        url_pattern = r'^https?://[^\s/$.?#].[^\s]*$'
+        return re.match(url_pattern, url) is not None
