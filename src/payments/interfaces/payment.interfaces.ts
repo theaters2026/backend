@@ -24,5 +24,3 @@ export interface ApiResponse<T = any> {
   data?: T
   error?: string
 }
-
-export type PaymentStatus = 'pending' | 'waiting_for_capture' | 'succeeded' | 'cancelled'

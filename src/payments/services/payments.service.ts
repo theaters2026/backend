@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { PaymentResponse, PaymentStatus } from '../interfaces/payment.interfaces'
+import { PaymentResponse } from '../interfaces/payment.interfaces'
+import { PaymentStatus } from '../enums/payment-status.enum'
 import { PaymentNotFoundException } from '../exceptions/payment.exceptions'
 
 @Injectable()

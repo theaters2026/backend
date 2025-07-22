@@ -19,6 +19,7 @@ import { CapturePaymentDto } from '../dto/capture-payment.dto'
 import { GetPaymentDto } from '../dto/get-payment.dto'
 import { WebhookDto } from '../dto/webhook.dto'
 import { ApiResponse as IApiResponse } from '../interfaces/payment.interfaces'
+import { PaymentStatus } from '../enums/payment-status.enum'
 import { Public } from 'src/common/decorators'
 import { PaymentExceptionFilter } from '../filters/payment-exception.filter'
 
@@ -86,7 +87,7 @@ export class YookassaController {
     this.logger.log(`Capturing payment: ${params.id}`)
 
     const payment = await this.yookassaService.capturePayment(params.id, dto?.amount)
-    await this.paymentsService.updatePaymentStatus(params.id, 'succeeded')
+    await this.paymentsService.updatePaymentStatus(params.id, PaymentStatus.SUCCEEDED)
 
     return {
       success: true,
@@ -104,7 +105,7 @@ export class YookassaController {
     this.logger.log(`Cancelling payment: ${params.id}`)
 
     const payment = await this.yookassaService.cancelPayment(params.id)
-    await this.paymentsService.updatePaymentStatus(params.id, 'cancelled')
+    await this.paymentsService.updatePaymentStatus(params.id, PaymentStatus.CANCELLED)
 
     return {
       success: true,
