@@ -2,10 +2,7 @@ import os
 from selenium.webdriver.chrome.options import Options
 from typing import Optional
 
-
 class ChromeConfig:
-    """Конфигурация для Chrome WebDriver"""
-
     @staticmethod
     def get_chrome_options() -> Options:
         chrome_options = Options()

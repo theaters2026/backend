@@ -25,14 +25,6 @@ class HtmlParser:
     def _find_performance_blocks(self, soup: BeautifulSoup) -> List:
         selectors_to_try = [
             "div._3XrzE._5fgzK",
-            "div[class*='_3XrzE']",
-            "div[class*='event']",
-            "div[class*='performance']",
-            "div[class*='card']",
-            "article",
-            ".event-item",
-            "[data-testid*='event']",
-            "[data-testid*='performance']"
         ]
 
         performance_blocks = []
@@ -90,19 +82,11 @@ class HtmlParser:
         for link in links:
             href = link.get('href')
             if href and ('performance' in href or 'event' in href):
-                performance_data['detail_url'] = self._add_https_suffix(href)
+                performance_data['detail_url'] = href
                 return
 
         for attr in ['data-href', 'data-url', 'data-link', 'data-event-url']:
             attr_value = performance_div.get(attr)
             if attr_value:
-                performance_data['detail_url'] = self._add_https_suffix(attr_value)
+                performance_data['detail_url'] = attr_value
                 return
-
-    def _add_https_suffix(self, url: str) -> str:
-        """Добавляет /https в конец URL"""
-        if not url:
-            return url
-
-        url = url.rstrip('/')
-        return f"{url}/https"

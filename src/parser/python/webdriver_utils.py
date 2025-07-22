@@ -11,12 +11,7 @@ class WebDriverUtils:
         selectors_to_try = [
             "div._3XrzE._5fgzK",
             "._3ErvA",
-            "div[class*='_3ErvA']",
             "div[class*='performance']",
-            "div[class*='event']",
-            ".event-item",
-            "div[class*='card']",
-            "body"
         ]
 
         for selector in selectors_to_try:
