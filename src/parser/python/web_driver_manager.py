@@ -5,7 +5,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from typing import Optional, List, Dict
 from urllib.parse import urlparse
-
 from chrome_config import ChromeConfig
 from event_parser import EventParser
 from link_finder import LinkFinder
