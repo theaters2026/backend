@@ -1,13 +1,13 @@
 import IORedis from 'ioredis'
 import { Logger } from '@nestjs/common'
+import * as RedisConstants from '../constants'
 
-const redisUri = process.env.REDIS_URI || 'redis://localhost:6379'
 const logger = new Logger('Redis')
 
-export const redis = new IORedis(redisUri, {
+export const redis = new IORedis(RedisConstants.REDIS_URI, {
   lazyConnect: true,
-  connectTimeout: 5000,
-  maxRetriesPerRequest: 3,
+  connectTimeout: RedisConstants.REDIS_CONNECT_TIMEOUT,
+  maxRetriesPerRequest: RedisConstants.REDIS_MAX_RETRIES,
 })
 
 redis.on('error', (err) => {
@@ -29,7 +29,7 @@ redis.on('monitor', (time, args) => {
 export const customRedisStore = {
   async get(sid: string, callback: (err?: any, session?: any) => void) {
     try {
-      const data = await redis.get(`session:${sid}`)
+      const data = await redis.get(`${RedisConstants.SESSION_PREFIX}${sid}`)
       if (!data) return callback()
 
       const session = JSON.parse(data)
@@ -42,12 +42,11 @@ export const customRedisStore = {
 
   async set(sid: string, session: any, callback: (err?: any) => void) {
     try {
-      const ttl =
-        session.cookie && session.cookie.maxAge
-          ? Math.floor(session.cookie.maxAge / 1000)
-          : 24 * 60 * 60
+      const ttl = session.cookie?.maxAge
+        ? Math.floor(session.cookie.maxAge / 1000)
+        : RedisConstants.DEFAULT_SESSION_TTL_SECONDS
 
-      await redis.set(`session:${sid}`, JSON.stringify(session), 'EX', ttl)
+      await redis.set(`${RedisConstants.SESSION_PREFIX}${sid}`, JSON.stringify(session), 'EX', ttl)
       callback()
     } catch (error) {
       logger.error('Error setting session in Redis:', error)
@@ -57,7 +56,7 @@ export const customRedisStore = {
 
   async destroy(sid: string, callback: (err?: any) => void) {
     try {
-      await redis.del(`session:${sid}`)
+      await redis.del(`${RedisConstants.SESSION_PREFIX}${sid}`)
       callback()
     } catch (error) {
       logger.error('Error destroying session in Redis:', error)
