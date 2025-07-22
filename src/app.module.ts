@@ -3,6 +3,7 @@ import { CrudModule } from './crud/crud.module'
 import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
 import { PaymentsModule } from './payments/payments.module'
+import { ParserModule } from './parser/parser.module'
 
 @Module({
   controllers: [],
@@ -16,6 +17,7 @@ import { PaymentsModule } from './payments/payments.module'
     CrudModule,
     AuthModule,
     PaymentsModule,
+    ParserModule,
   ],
 })
 export class AppModule {}

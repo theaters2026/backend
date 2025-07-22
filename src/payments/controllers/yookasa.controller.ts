@@ -22,7 +22,7 @@ import { ApiResponse as IApiResponse } from '../interfaces/payment.interfaces'
 import { Public } from 'src/common/decorators'
 import { PaymentExceptionFilter } from '../filters/payment-exception.filter'
 
-@ApiTags('payments')
+@ApiTags('Payments')
 @Controller('payments')
 @UseFilters(PaymentExceptionFilter)
 export class YookassaController {

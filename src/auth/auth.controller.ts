@@ -3,7 +3,6 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   Post,
@@ -12,7 +11,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators'
 
-import { AuthDto, LoginDto } from './dto'
+import { AuthDto, LoginDto, RefreshTokenDto, UserInfoDto, ValidateTokenDto } from './dto'
 import { AtGuard, RtGuard } from './guards'
 import { Tokens } from './types'
 import { AuthService } from './services'
@@ -58,12 +57,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse({ status: 200, description: 'Tokens successfully refreshed' })
-  @ApiResponse({ status: 403, description: 'Access Denied' })
-  async refreshTokens(@Body('refreshToken') refreshToken: string): Promise<Tokens> {
-    if (!refreshToken) {
+  @ApiResponse({ status: 403, description: 'Access Denied - Invalid or expired refresh token' })
+  async refreshTokens(@Body() dto: RefreshTokenDto): Promise<Tokens> {
+    if (!dto.refreshToken) {
       throw new ForbiddenException('Refresh token is required')
     }
-    return this.authService.refreshTokens(refreshToken)
+    return this.authService.refreshTokens(dto.refreshToken)
   }
 
   @ApiBearerAuth()
@@ -71,8 +70,8 @@ export class AuthController {
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current user info' })
-  @ApiResponse({ status: 200, description: 'Returns current user data' })
-  async getCurrentUser(@GetCurrentUser() user: any) {
+  @ApiResponse({ status: 200, description: 'Returns current user data', type: UserInfoDto })
+  async getCurrentUser(@GetCurrentUser() user: UserInfoDto): Promise<UserInfoDto> {
     return user
   }
 
@@ -80,15 +79,13 @@ export class AuthController {
   @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Validate access token' })
+  @ApiResponse({ status: 200, description: 'Token validation result' })
+  @ApiResponse({ status: 403, description: 'Invalid or missing access token' })
   async validateToken(
+    @Body() dto: ValidateTokenDto,
     @GetCurrentUserId() userId: string,
-    @Headers('authorization') authHeader: string,
   ): Promise<{ valid: boolean }> {
-    const accessToken = authHeader?.replace('Bearer ', '')
-    if (!accessToken) {
-      throw new ForbiddenException('No access token provided')
-    }
-    const isValid = await this.authService.validateAccessToken(userId, accessToken)
+    const isValid = await this.authService.validateAccessToken(userId, dto.accessToken)
     return { valid: isValid }
   }
 }

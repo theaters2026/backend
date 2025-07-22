@@ -1,140 +1,77 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common'
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Controller, Get, Param, UseInterceptors } from '@nestjs/common'
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Public } from 'src/common/decorators'
+import { BigIntSerializerInterceptor } from '../../../common/interceptors/bigint-serializer.interceptor'
 import { EventService } from '../services/event.service'
-import { CreateEventDto } from '../dto/create-event.dto'
-import { DeleteEventDto } from '../dto/delete-event.dto'
+import { UuidParamDto } from '../dto/uuid.dto'
+import { ShopIdParamDto } from '../dto/shop-id-param.dto'
+import { EventListItemDto, EventDetailDto } from '../dto/event-list.dto'
 
-@ApiTags('Event Management')
-@Controller('event')
+@ApiTags('Events')
+@Controller('events')
+@UseInterceptors(BigIntSerializerInterceptor)
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Post('create')
-  @ApiOperation({
-    summary: 'Create a new event',
-    description:
-      'Creates a new event with details including name, description, and optional media content',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Event successfully created',
-    type: CreateEventDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Validation error - Invalid input data provided',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
-  })
-  @ApiBody({
-    type: CreateEventDto,
-    description: 'Event creation data transfer object',
-  })
-  async create(@Body() dto: CreateEventDto) {
-    return this.eventService.create(dto)
-  }
-
+  @Public()
   @Get()
   @ApiOperation({
     summary: 'Get all events',
-    description: 'Retrieves all events with their descriptions and media content, ordered by date',
+    description: 'Retrieves all events with their show and building information',
   })
   @ApiResponse({
     status: 200,
-    description: 'Events successfully retrieved',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            format: 'uuid',
-            description: 'Event ID',
-          },
-          name: {
-            type: 'string',
-            description: 'Event name',
-          },
-          description: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', format: 'uuid' },
-              age: { type: 'number', description: 'Minimum age requirement' },
-              address: { type: 'string', description: 'Event address' },
-              price: {
-                type: 'number',
-                nullable: true,
-                description: 'Event price',
-              },
-              date: {
-                type: 'string',
-                format: 'date-time',
-                nullable: true,
-                description: 'Event date',
-              },
-              org_name: {
-                type: 'string',
-                nullable: true,
-                description: 'Organizer name',
-              },
-            },
-          },
-          media: {
-            type: 'object',
-            nullable: true,
-            properties: {
-              id: { type: 'string', format: 'uuid' },
-              url: { type: 'string', format: 'url', description: 'Media URL' },
-              type: { type: 'string', description: 'Media type' },
-            },
-          },
-        },
-      },
-    },
+    description: 'Events retrieved successfully',
+    type: [EventListItemDto],
   })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
-  })
-  async getAll() {
-    return this.eventService.getAll()
+  async getAllEvents() {
+    return this.eventService.getAllEvents()
   }
 
-  @Delete('delete')
+  @Public()
+  @Get(':id')
   @ApiOperation({
-    summary: 'Delete an event by ID',
-    description: 'Removes an existing event from the system using its UUID',
+    summary: 'Get event by ID',
+    description: 'Retrieves a specific event by its UUID with all related data',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
     status: 200,
-    description: 'Event successfully deleted',
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          format: 'uuid',
-          description: 'The ID of the deleted event',
-        },
-      },
-    },
+    description: 'Event retrieved successfully',
+    type: EventDetailDto,
   })
   @ApiResponse({
     status: 404,
-    description: 'Event not found - The requested event does not exist',
+    description: 'Event not found',
+  })
+  async getEventById(@Param() params: UuidParamDto) {
+    return this.eventService.getEventById(params.id)
+  }
+
+  @Public()
+  @Get('shop/:shopId')
+  @ApiOperation({
+    summary: 'Get events by shop ID',
+    description:
+      'Retrieves all events for a specific shop with their show and building information',
+  })
+  @ApiParam({
+    name: 'shopId',
+    type: 'string',
+    description: 'Shop ID to filter events',
+    example: '2723',
   })
   @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
+    status: 200,
+    description: 'Events retrieved successfully',
+    type: [EventListItemDto],
   })
-  @ApiBody({
-    type: DeleteEventDto,
-    description: 'Event deletion data transfer object containing the event ID',
-  })
-  delete(@Body() dto: DeleteEventDto) {
-    return this.eventService.delete(dto)
+  async getEventsByShopId(@Param() params: ShopIdParamDto) {
+    return this.eventService.getEventsByShopId(params.shopId)
   }
 }
