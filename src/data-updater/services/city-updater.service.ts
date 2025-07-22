@@ -84,6 +84,31 @@ export class CityUpdaterService {
     }
   }
 
+  async getCityUpdateStats(): Promise<CityUpdateStats> {
+    const [eventsWithAddress, eventsWithCityId] = await Promise.all([
+      this.prisma.event.count({
+        where: {
+          address: {
+            not: null,
+          },
+        },
+      }),
+      this.prisma.event.count({
+        where: {
+          cityId: {
+            not: null,
+          },
+        },
+      }),
+    ])
+
+    return {
+      eventsWithAddress,
+      eventsWithCityId,
+      eventsWithoutCityId: eventsWithAddress - eventsWithCityId,
+    }
+  }
+
   private async getCityIdByAddress(address: string, eventId?: string): Promise<number | null> {
     try {
       if (this.geocodingCache.has(address)) {
@@ -144,31 +169,6 @@ export class CityUpdaterService {
     } catch (error) {
       this.logger.error(`Error updating event ${eventId} with city_id ${cityId}: ${error.message}`)
       throw error
-    }
-  }
-
-  async getCityUpdateStats(): Promise<CityUpdateStats> {
-    const [eventsWithAddress, eventsWithCityId] = await Promise.all([
-      this.prisma.event.count({
-        where: {
-          address: {
-            not: null,
-          },
-        },
-      }),
-      this.prisma.event.count({
-        where: {
-          cityId: {
-            not: null,
-          },
-        },
-      }),
-    ])
-
-    return {
-      eventsWithAddress,
-      eventsWithCityId,
-      eventsWithoutCityId: eventsWithAddress - eventsWithCityId,
     }
   }
 }

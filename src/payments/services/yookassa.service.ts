@@ -2,15 +2,15 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import axios, { AxiosInstance } from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-import { PaymentAmount, PaymentResponse } from '../interfaces/payment.interfaces'
-import { CreatePaymentDto } from '../dto/create-payment.dto'
+import { PaymentAmount, PaymentResponse } from '../interfaces'
+import { CreatePaymentDto } from '../dto'
 import {
   PaymentCancellationException,
   PaymentCaptureException,
   PaymentCreationException,
   PaymentNotFoundException,
   YookassaApiException,
-} from '../exceptions/payment.exceptions'
+} from '../exceptions'
 
 @Injectable()
 export class YookassaService {

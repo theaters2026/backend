@@ -1,6 +1,8 @@
 import os
-from selenium.webdriver.chrome.options import Options
 from typing import Optional
+
+from selenium.webdriver.chrome.options import Options
+
 
 class ChromeConfig:
     @staticmethod
@@ -27,7 +29,8 @@ class ChromeConfig:
         chrome_options.add_argument("--window-size=800, 600")
         chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument(
+            "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
         chrome_bin = os.environ.get('CHROME_BIN', '/usr/bin/chromium-browser')
         if os.path.exists(chrome_bin):

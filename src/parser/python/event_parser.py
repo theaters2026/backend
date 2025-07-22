@@ -1,4 +1,5 @@
 from typing import Dict
+
 from selenium.webdriver.common.by import By
 
 

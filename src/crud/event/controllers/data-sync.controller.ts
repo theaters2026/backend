@@ -2,9 +2,8 @@ import { Body, Controller, Post, UseInterceptors } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { BigIntSerializerInterceptor } from '../../../common/interceptors/bigint-serializer.interceptor'
-import { EventService } from '../services/event.service'
-import { SyncDataDto } from '../dto/request.dto'
-import { SyncResponseDto } from '../dto/response.dto'
+import { EventService } from '../services'
+import { SyncDataDto, SyncResponseDto } from '../dto'
 
 @ApiTags('Data Synchronization')
 @Controller('sync')

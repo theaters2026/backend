@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common'
-import { ParserService } from '../services/parser.service'
+import { ParserService } from '../services'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { ParserQueryDto, ParserResponseDto } from '../dto'

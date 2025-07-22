@@ -1,6 +1,5 @@
 import { z } from 'zod'
-import { Currency } from '../enums/currency.enum'
-import { ConfirmationType } from '../enums/confirmation-type.enum'
+import { ConfirmationType, Currency } from '../enums'
 
 export const CreatePaymentSchema = z.object({
   amount: z.object({

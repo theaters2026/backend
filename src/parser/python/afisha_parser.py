@@ -1,7 +1,8 @@
-from typing import List, Dict, Optional
-from web_driver_manager import WebDriverManager
-from html_parser import HtmlParser
+from typing import List, Dict
+
 from file_manager import FileManager
+from html_parser import HtmlParser
+from web_driver_manager import WebDriverManager
 
 
 class AfishaParser:

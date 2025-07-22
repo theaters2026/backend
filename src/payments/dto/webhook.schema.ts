@@ -1,7 +1,5 @@
 import { z } from 'zod'
-import { PaymentStatus } from '../enums/payment-status.enum'
-import { WebhookEvent } from '../enums/webhook-event.enum'
-import { Currency } from '../enums/currency.enum'
+import { Currency, PaymentStatus, WebhookEvent } from '../enums'
 
 export const WebhookSchema = z.object({
   event: z.nativeEnum(WebhookEvent, { message: 'Invalid webhook event type' }),

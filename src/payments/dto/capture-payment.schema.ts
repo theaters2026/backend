@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Currency } from '../enums/currency.enum'
+import { Currency } from '../enums'
 
 export const CapturePaymentSchema = z.object({
   amount: z

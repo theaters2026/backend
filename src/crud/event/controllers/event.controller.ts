@@ -2,10 +2,8 @@ import { Controller, Get, Param, UseInterceptors } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { BigIntSerializerInterceptor } from '../../../common/interceptors/bigint-serializer.interceptor'
-import { EventService } from '../services/event.service'
-import { UuidParamDto } from '../dto/uuid.dto'
-import { ShopIdParamDto } from '../dto/shop-id-param.dto'
-import { EventListItemDto, EventDetailDto } from '../dto/event-list.dto'
+import { EventService } from '../services'
+import { EventDetailDto, EventListItemDto, ShopIdParamDto, UuidParamDto } from '../dto'
 
 @ApiTags('Events')
 @Controller('events')

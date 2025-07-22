@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { FastifyRequest } from 'fastify'
-import { MultipartProcessorService } from '../service/multipart-processor.service'
+import { MultipartProcessorService } from '../service'
 import { MultipartFile } from '@fastify/multipart'
 
 declare module 'fastify' {
