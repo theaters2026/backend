@@ -1,1 +1,1 @@
-export * from './yookasa.controller'
+export * from './yookassa.controller'
