@@ -7,10 +7,8 @@ import {
   Param,
   Post,
   UseFilters,
-  UsePipes,
 } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe'
 import { PaymentsService, WebhookService, YookassaService } from '../services'
 import { CapturePaymentDto, CreatePaymentDto, GetPaymentDto, WebhookDto } from '../dto'
 import { ApiResponse as IApiResponse } from '../interfaces'
@@ -37,7 +35,6 @@ export class YookassaController {
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   @ApiResponse({ status: 401, description: 'Authentication failed' })
   @ApiBody({ type: CreatePaymentDto })
-  @UsePipes(new ZodValidationPipe(CreatePaymentDto.schema))
   async createPayment(@Body() dto: CreatePaymentDto): Promise<IApiResponse> {
     this.logger.log('Creating new payment')
 
@@ -74,7 +71,6 @@ export class YookassaController {
   @ApiResponse({ status: 200, description: 'Payment captured successfully' })
   @ApiResponse({ status: 400, description: 'Payment capture error' })
   @ApiResponse({ status: 404, description: 'Payment not found' })
-  @UsePipes(new ZodValidationPipe(CapturePaymentDto.schema))
   async capturePayment(
     @Param() params: GetPaymentDto,
     @Body() dto?: CapturePaymentDto,
@@ -114,7 +110,6 @@ export class YookassaController {
   @ApiBody({ type: WebhookDto })
   @ApiResponse({ status: 200, description: 'Webhook processed successfully' })
   @ApiResponse({ status: 400, description: 'Invalid signature or webhook data' })
-  @UsePipes(new ZodValidationPipe(WebhookDto.schema))
   async handleWebhook(
     @Body() dto: WebhookDto,
     @Headers('x-yookassa-signature') signature: string,
