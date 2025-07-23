@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { CityUpdaterService } from '../services/city-updater.service'
+import { CityUpdaterService } from '../services'
 import { Public } from 'src/common/decorators'
 
 @ApiTags('City Updater')

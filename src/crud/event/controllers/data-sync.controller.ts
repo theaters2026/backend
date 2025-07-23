@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseInterceptors } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
-import { BigIntSerializerInterceptor } from '../../../common/interceptors/bigint-serializer.interceptor'
+import { BigIntSerializerInterceptor } from '../../../common/interceptors'
 import { EventService } from '../services'
 import { SyncDataDto, SyncResponseDto } from '../dto'
 
