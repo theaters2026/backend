@@ -10,22 +10,22 @@ datasource db {
 model Show {
   id           String   @id @default(uuid()) @db.Uuid
   externalId   Int      @unique @map("external_id")
-  name         String
+  name         String?
   detailed_url String?  @map("detailed_url")
   type_num     String?
   image        String?
   desc         String?  @db.Text
   partnerId    Int?     @map("partner_id")
-  ageLimit     Int      @default(0) @map("age_limit")
-  shortInfo    String?  @db.Text @map("short_info")
-  fullInfo     String?  @db.Text @map("full_info")
+  ageLimit     Int?     @default(0) @map("age_limit")
+  shortInfo    String?  @map("short_info") @db.Text
+  fullInfo     String?  @map("full_info") @db.Text
   publDate     String?  @map("publ_date")
   premiereDate String?  @map("premiere_date")
   duration     String?
-  minPrice     Decimal? @db.Decimal(10, 2) @map("min_price")
-  maxPrice     Decimal? @db.Decimal(10, 2) @map("max_price")
-  isPushkin    Boolean  @default(false) @map("is_pushkin")
-  shopId       String   @map("shop_id")
+  minPrice     Decimal? @map("min_price") @db.Decimal(10, 2)
+  maxPrice     Decimal? @map("max_price") @db.Decimal(10, 2)
+  isPushkin    Boolean? @default(false) @map("is_pushkin")
+  shopId       String?  @map("shop_id")
   createdAt    DateTime @default(now()) @db.Timestamp(6)
   updatedAt    DateTime @updatedAt @db.Timestamp(6)
 
@@ -39,7 +39,7 @@ model Show {
 model Event {
   id               String    @id @default(uuid()) @db.Uuid
   externalId       Int       @unique @map("external_id")
-  name             String
+  name             String?
   showId           Int?      @map("show_id")
   timeType         Int?      @map("time_type")
   date             DateTime?
@@ -47,31 +47,31 @@ model Event {
   endDate          DateTime? @map("end_date")
   timestamp        BigInt?
   timezone         String?
-  isPushkin        Boolean   @default(false) @map("is_pushkin")
+  isPushkin        Boolean?  @default(false) @map("is_pushkin")
   locationId       Int?      @map("location_id")
   locationName     String?   @map("location_name")
   serviceName      String?   @map("service_name")
-  count            Int       @default(0)
-  minPrice         Decimal?  @db.Decimal(10, 2) @map("min_price")
-  maxPrice         Decimal?  @db.Decimal(10, 2) @map("max_price")
+  count            Int?      @default(0)
+  minPrice         Decimal?  @map("min_price") @db.Decimal(10, 2)
+  maxPrice         Decimal?  @map("max_price") @db.Decimal(10, 2)
   image            String?
-  ageLimit         Int       @default(0) @map("age_limit")
+  ageLimit         Int?      @default(0) @map("age_limit")
   desc             String?
-  onlyPrivateSells Boolean   @default(false) @map("only_private_sells")
-  isSeason         Boolean   @default(false) @map("is_season")
-  isCovidFree      Boolean   @default(false) @map("is_covid_free")
-  isHideTime       Boolean   @default(false) @map("is_hide_time")
+  onlyPrivateSells Boolean?  @default(false) @map("only_private_sells")
+  isSeason         Boolean?  @default(false) @map("is_season")
+  isCovidFree      Boolean?  @default(false) @map("is_covid_free")
+  isHideTime       Boolean?  @default(false) @map("is_hide_time")
   pipelineEventId  Int?      @map("pipeline_event_id")
-  isAccessOnlyLink Boolean   @default(false) @map("is_access_only_link")
+  isAccessOnlyLink Boolean?  @default(false) @map("is_access_only_link")
   cityId           Int?      @map("city_id")
   address          String?
   createdAt        DateTime  @default(now()) @db.Timestamp(6)
   updatedAt        DateTime  @updatedAt @db.Timestamp(6)
 
   show       Show?     @relation(fields: [showUuid], references: [id])
-  showUuid   String?   @db.Uuid @map("show_uuid")
+  showUuid   String?   @map("show_uuid") @db.Uuid
   building   Building? @relation(fields: [buildingId], references: [id])
-  buildingId String?   @db.Uuid @map("building_id")
+  buildingId String?   @map("building_id") @db.Uuid
 
   @@index([showUuid])
   @@index([buildingId])
@@ -99,7 +99,7 @@ model Building {
 model ShowCategory {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
-  showId    String   @db.Uuid @map("show_id")
+  showId    String   @map("show_id") @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamp(6)
 
   show Show @relation(fields: [showId], references: [id], onDelete: Cascade)
