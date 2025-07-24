@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
-import { User } from '@prisma/client'
 
 import { AuthDto, LoginDto } from '../dto'
 import { Tokens } from '../types'
@@ -65,10 +64,6 @@ export class AuthService {
     }
 
     return this.tokenService.generateUserTokens(user)
-  }
-
-  async validateUser(dto: AuthDto): Promise<User> {
-    return this.userService.validateUser(dto)
   }
 
   async validateAccessToken(userId: string, accessToken: string): Promise<boolean> {

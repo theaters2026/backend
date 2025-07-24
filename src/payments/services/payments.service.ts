@@ -37,28 +37,4 @@ export class PaymentsService {
       throw new Error(`Failed to update payment status: ${error.message}`)
     }
   }
-
-  async getPaymentById(paymentId: string): Promise<PaymentResponse | null> {
-    try {
-      this.logger.log(`Getting payment: ${paymentId}`)
-
-      this.logger.log(`Payment retrieved: ${paymentId}`)
-      return null
-    } catch (error) {
-      this.logger.error(`Error getting payment ${paymentId}:`, error.message)
-      throw new PaymentNotFoundException(paymentId)
-    }
-  }
-
-  async getAllPayments(): Promise<PaymentResponse[]> {
-    try {
-      this.logger.log('Getting all payments')
-
-      this.logger.log('All payments retrieved')
-      return []
-    } catch (error) {
-      this.logger.error('Error getting all payments:', error.message)
-      throw new Error(`Failed to get payments: ${error.message}`)
-    }
-  }
 }

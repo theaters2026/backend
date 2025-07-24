@@ -12,10 +12,6 @@ export class CityListLoaderService {
     this.loadCitiesList()
   }
 
-  getCitiesList(): CityFromList[] {
-    return this.citiesList
-  }
-
   findCityInList(cityName: string): CityFromList | null {
     if (!this.citiesList || this.citiesList.length === 0) {
       return null

@@ -41,17 +41,6 @@ export class UserService {
     })
   }
 
-  async validateUser(dto: AuthDto): Promise<User> {
-    const user = await this.findUserByUsername(dto.username)
-
-    if (!user) throw new ForbiddenException('Access Denied')
-
-    const passwordMatches = await argon.verify(user.hash, dto.password)
-    if (!passwordMatches) throw new ForbiddenException('Access Denied')
-
-    return user
-  }
-
   async validateUserCredentials(dto: LoginDto): Promise<User> {
     const user = await this.findUserByUsername(dto.username)
 
