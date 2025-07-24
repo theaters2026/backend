@@ -17,6 +17,7 @@ model Show {
   desc         String?  @db.Text
   partnerId    Int?     @map("partner_id")
   ageLimit     Int?     @default(0) @map("age_limit")
+  isHall       Boolean? @default(false) @map("is_hall")
   shortInfo    String?  @map("short_info") @db.Text
   fullInfo     String?  @map("full_info") @db.Text
   publDate     String?  @map("publ_date")
@@ -26,14 +27,33 @@ model Show {
   maxPrice     Decimal? @map("max_price") @db.Decimal(10, 2)
   isPushkin    Boolean? @default(false) @map("is_pushkin")
   shopId       String?  @map("shop_id")
+  hallId       String?  @map("hall_id") @db.Uuid
   createdAt    DateTime @default(now()) @db.Timestamp(6)
   updatedAt    DateTime @updatedAt @db.Timestamp(6)
 
   events         Event[]
   showCategories ShowCategory[]
+  hall           Hall?          @relation(fields: [hallId], references: [id])
 
   @@index([shopId])
+  @@index([hallId])
   @@map("shows")
+}
+
+model Hall {
+  id          String   @id @default(uuid()) @db.Uuid
+  externalId  Int      @unique @map("external_id")
+  name        String
+  description String?  @db.Text
+  capacity    Int?
+  address     String?
+  hallData    Json?    @map("hall_data")
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
+
+  shows Show[]
+
+  @@map("halls")
 }
 
 model Event {
