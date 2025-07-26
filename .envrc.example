@@ -24,4 +24,3 @@ export PG_IMAGE="bitnami/postgresql"
 export IMAGE_TAG_PG="latest"
 export JWT_ACCESS_SECRET="your_very_long_secret__at_least_32_chars_long133your_very_long_secret__at_least_32_chars_long133"
 
-
