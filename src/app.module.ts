@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module'
 import { PaymentsModule } from './payments/payments.module'
 import { ParserModule } from './parser/parser.module'
 import { DataUpdaterModule } from './data-updater/data-updater.module'
+import { HealthModule } from './health/health.module'
 
 @Module({
   controllers: [],
@@ -20,6 +21,7 @@ import { DataUpdaterModule } from './data-updater/data-updater.module'
     PaymentsModule,
     ParserModule,
     DataUpdaterModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
