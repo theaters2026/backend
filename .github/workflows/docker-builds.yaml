@@ -7,7 +7,7 @@ on:
 
 jobs:
   trigger-build:
-    uses: multi-repo/workflows/.github/workflows/kaniko-build.yaml@main
+    uses: theaters2026/workflows/.github/workflows/buildah-build.yaml@main
     with:
       image-name: ${{ github.repository }}/backend
     secrets:
@@ -15,7 +15,7 @@ jobs:
 
   trigger-cleanup:
     needs: [ trigger-build ]
-    uses: multi-repo/workflows/.github/workflows/clean-registry.yaml@main
+    uses: theaters2026/workflows/.github/workflows/clean-registry.yaml@main
     with:
       owner: ${{ github.repository_owner }}
       repository: backend
