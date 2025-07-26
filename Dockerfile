@@ -1,5 +1,7 @@
 FROM node:alpine
+
 WORKDIR /app
+
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -19,10 +21,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY package*.json ./
-COPY yarn.lock* ./
 
-RUN yarn install --frozen-lockfile
 COPY . .
+
+RUN yarn install
+
 RUN npx prisma generate
 RUN yarn run build
 
